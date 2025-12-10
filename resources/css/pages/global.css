@@ -1,0 +1,53 @@
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-5 py-3 rounded-xl font-semibold uppercase tracking-wide
+           transition-all duration-300 transform cursor-pointer select-none;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-br from-primary to-primaryDark text-white shadow-lg;
+  }
+
+  .btn-primary:hover {
+    @apply from-primaryDark to-primaryDark shadow-xl -translate-y-[1px] scale-[1.02];
+  }
+
+  .btn-primary:active {
+    @apply bg-gradient-to-br from-primaryLight to-primary translate-y-[1px] scale-[0.98] shadow-md;
+  }
+}
+
+@layer components {
+  .form-input {
+    @apply rounded-xl border-2 border-white
+           bg-gray-100 /* default abu-abu terang */
+           placeholder:text-gray-400
+           transition-all duration-300
+           focus:bg-white /* saat aktif/klik berubah putih */
+            focus:border-primary focus:ring-4 focus:ring-primary/20;
+  }
+
+  .form-input.error {
+    @apply border-red-500 ring-red-500/20;
+  }
+
+  .form-label {
+    @apply block font-semibold text-primary mb-2 text-sm;
+  }
+}
+
+@layer components {
+  .form-checkbox {
+    @apply w-5 h-5 rounded border-2 border-gray-300 text-primary transition-all duration-200 cursor-pointer;
+  }
+
+  .form-checkbox:checked {
+    @apply bg-primary border-primary;
+  }
+
+  .form-checkbox-label {
+    @apply  text-gray-700 select-none;
+  }
+}
+
+
