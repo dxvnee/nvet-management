@@ -26,10 +26,10 @@
             <div class="flex flex-col w-full">
 
                 {{-- topbar --}}
-                @include('components.main-topbar', ['title' => $header])
 
                 <!-- Page Content -->
                 <main>
+                    @include('components.main-topbar', ['title' => $header])
                     {{ $slot }}
                 </main>
             </div>
