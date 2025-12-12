@@ -1,5 +1,5 @@
 <div
-    class="shadow-2xl rounded-md flex w-1/5 min-h-screen p-5 bg-white transform transition-all duration-300 hover:shadow-3xl">
+    class="m-5 overflow-hidden shadow-2xl-lr rounded-xl flex w-96 min-h-screen p-5 bg-white transform transition-all duration-300 hover:shadow-3xl">
     <div class="flex min-h-full w-full flex-col">
 
         <!-- Logo -->

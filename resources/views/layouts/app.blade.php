@@ -31,8 +31,10 @@
                 <main>
                     @include('components.main-topbar', ['title' => $header])
                     {{ $slot }}
+                    @include('components.main-bottombar', ['title' => $header])
                 </main>
             </div>
+
         </div>
 
 

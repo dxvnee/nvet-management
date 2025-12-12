@@ -2,7 +2,7 @@
     <x-slot name="header">Dashboard</x-slot>
 
     <div
-        class="py-12 animate-fade-in bg-gradient-to-br from-primaryUltraLight via-white to-primaryUltraLight min-h-screen">
+        class="py-12  min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
             <!-- Welcome Section -->
             <div
@@ -200,119 +200,4 @@
         </div>
     </div>
 
-    <style>
-        .animate-fade-in {
-            animation: fadeIn 1s ease-out;
-        }
-
-        .animate-slide-up {
-            animation: slideUp 0.8s ease-out;
-        }
-
-        .animate-slide-up-delay-1 {
-            animation: slideUp 0.8s ease-out 0.1s both;
-        }
-
-        .animate-slide-up-delay-2 {
-            animation: slideUp 0.8s ease-out 0.2s both;
-        }
-
-        .animate-slide-up-delay-3 {
-            animation: slideUp 0.8s ease-out 0.3s both;
-        }
-
-        .animate-slide-up-delay-4 {
-            animation: slideUp 0.8s ease-out 0.4s both;
-        }
-
-        .animate-slide-up-delay-5 {
-            animation: slideUp 0.8s ease-out 0.5s both;
-        }
-
-        .animate-fade-in-up-delay-1 {
-            animation: fadeInUp 0.6s ease-out 0.6s both;
-        }
-
-        .animate-fade-in-up-delay-2 {
-            animation: fadeInUp 0.6s ease-out 0.7s both;
-        }
-
-        .animate-fade-in-up-delay-3 {
-            animation: fadeInUp 0.6s ease-out 0.8s both;
-        }
-
-        .animate-pulse-slow {
-            animation: pulse 3s ease-in-out infinite;
-        }
-
-        .animate-bounce-slow {
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        .animate-count-up {
-            animation: countUp 2s ease-out forwards;
-        }
-
-        .animate-progress {
-            animation: progressFill 1.5s ease-out forwards;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px) scale(0.95);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes countUp {
-            from {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        @keyframes progressFill {
-            from {
-                width: 0%;
-            }
-
-            to {
-                width: var(--progress-width, 85%);
-            }
-        }
-    </style>
 </x-app-layout>
