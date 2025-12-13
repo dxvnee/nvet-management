@@ -9,6 +9,8 @@
 </head>
 
 <body class="min-h-screen flex items-center justify-center bg-primaryExtraLight font-sans">
+    <x-error-message />
+
     <div class="border border-black w-full min-h-screen flex items-center justify-center  bg-primaryExtraLight">
         <div
             class="flex flex-col md:flex-row w-full max-w-[900px] m-4 bg-white rounded-2xl shadow-[0_20px_60px_rgba(133,94,65,0.15)] overflow-hidden animate-[slideUp_0.8s_ease-out]">
@@ -28,6 +30,7 @@
                     <h2 class="title mb-2">NVet Clinic & Lab</h2>
                     <p class="text-gray-500 text-sm">Sistem manajemen karyawan dan absensi</p>
                 </div>
+
 
                 <form method="POST" action="{{ route('login') }}" autocomplete="off">
                     @csrf
