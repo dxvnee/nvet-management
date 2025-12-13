@@ -17,8 +17,11 @@
 </head>
 
 <body class="font-sans antialiased">
+    <x-error-message />
+
     <div class="w-full h-screen bg-primaryUltraLight">
         <div class="flex h-full p-5">
+
 
             @include('layouts.sidebar')
 
@@ -28,7 +31,6 @@
                 @include('components.main-topbar', ['title' => $header, 'subtle' => $subtle])
 
                 <main class = "flex-1">
-                    {{ $slot }}
                     {{ $slot }}
                 </main>
 

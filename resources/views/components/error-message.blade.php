@@ -18,7 +18,7 @@
 @endphp
 
 @if($message || session('error') || session('success'))
-    <div class="fixed top-4 right-4 z-[1000] animate-fade-in-up">
+    <div class="fixed ml-5 top-5 right-5 z-[1000] animate-fade-in-up">
         <div class="{{ $bgColor }} {{ $textColor }} px-6 py-4 rounded-lg shadow-lg max-w-sm w-full">
             <div class="flex items-center">
 
