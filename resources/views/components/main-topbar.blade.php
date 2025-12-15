@@ -17,7 +17,8 @@
                         {{ $title }}
                     </p>
                     <p class="normal text-white opacity-90 transition-opacity duration-500 hover:opacity-100 italic">
-                        {{ $subtle }}</p>
+                        {{ $subtle }}
+                    </p>
                 </div>
             </div>
 
@@ -26,12 +27,16 @@
                     <x-slot name="trigger">
                         <button
                             class="inline-flex items-center px-4 py-2 text-base font-bold rounded-xl text-white bg-transparent  transition-all duration-500 transform hover:scale-[1.05] ">
-                            <div class="text-white font-semibold">
-                                @if(Auth::check())
-                                    {{ Auth::user()->name }}
-                                @else
-                                    Guest
-                                @endif
+                            <div class="flex items-center gap-3">
+                                <img src="{{ auth()->user()->avatar ? asset('storage/' . auth()->user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) . '&color=7F9CF5&background=EBF4FF&size=32' }}"
+                                    alt="Avatar" class="w-8 h-8 rounded-full border-2 border-white shadow-sm">
+                                <div class="text-white font-semibold">
+                                    @if(Auth::check())
+                                        {{ Auth::user()->name }}
+                                    @else
+                                        Guest
+                                    @endif
+                                </div>
                             </div>
                             <div class="ms-2 transition-transform duration-500 group-hover:rotate-180">
                                 <svg class="fill-current h-5 w-5 transition-colors duration-500"
@@ -47,7 +52,7 @@
                     <x-slot name="content">
                         <div class="relative z-50 m-2">
                             @if(Auth::check())
-                                <x-dropdown-link :href="route('profile.edit')"
+                                <x-dropdown-link :href="route('profile.show')"
                                     class="transition-all duration-500 hover:bg-primaryExtraLight font-semibold">
                                     {{ __('Profile') }}
                                 </x-dropdown-link>
@@ -57,7 +62,7 @@
                                     @csrf
 
                                     <x-dropdown-link :href="route('logout')" onclick="event.preventDefault();
-                                                                            this.closest('form').submit();"
+                                                                                this.closest('form').submit();"
                                         class="transition-all duration-500 hover:bg-primaryExtraLight font-semibold">
                                         {{ __('Log Out') }}
                                     </x-dropdown-link>
