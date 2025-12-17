@@ -137,6 +137,7 @@ class DashboardController extends Controller
             'userTotalMenitTelat',
             'userPenggajianTerakhir',
             'userRiwayatAbsensi',
+            'today',
             'adminData'
         ));
     }

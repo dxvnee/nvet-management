@@ -57,6 +57,7 @@ class AbsenController extends Controller
             'sudahIzin',
             'sudahPulang',
             'riwayat',
+            'today',
             'totalJamKerja',
             'totalJamKerjaText'
         ));
@@ -354,10 +355,27 @@ class AbsenController extends Controller
     {
         $date = Carbon::parse($tanggal);
 
-        $absensiHari = Absen::with('user')
+        // Ambil semua pegawai
+        $employees = User::where('role', 'pegawai')->orderBy('name')->get();
+
+        // Ambil absensi hari itu
+        $absensi = Absen::with('user')
             ->whereDate('tanggal', $date)
-            ->orderBy('jam_masuk')
-            ->get();
+            ->get()
+            ->keyBy('user_id');
+
+        // Gabungkan data
+        $absensiHari = $employees->map(function ($employee) use ($absensi) {
+            if ($absensi->has($employee->id)) {
+                return $absensi->get($employee->id);
+            }
+
+            // Buat objek absen kosong untuk pegawai yang belum absen
+            $emptyAbsen = new Absen();
+            $emptyAbsen->user = $employee; // Set relation manually
+            $emptyAbsen->user_id = $employee->id;
+            return $emptyAbsen;
+        });
 
         return view('absensi.detail-hari', compact('absensiHari', 'tanggal'));
     }

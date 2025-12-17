@@ -231,7 +231,7 @@
                         </div>
                         <h3 class="text-lg font-bold text-gray-800">Aktivitas Absensi Terbaru</h3>
                     </div>
-                    <a href="{{ route('absen.riwayat') }}"
+                    <a href="{{ route('absen.detailHari', $today) }}"
                         class="text-primary hover:text-primaryDark text-sm font-medium">Lihat Semua →</a>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

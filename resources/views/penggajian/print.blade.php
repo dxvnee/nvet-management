@@ -48,14 +48,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 3px solid #0D9488;
+            border-bottom: 3px solid #e5e7eb;
             padding-bottom: 20px;
             margin-bottom: 30px;
         }
 
         .company-info h1 {
             font-size: 28px;
-            color: #0D9488;
+            color: #774900;
             font-weight: 700;
         }
 

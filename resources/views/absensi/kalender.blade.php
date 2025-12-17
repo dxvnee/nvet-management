@@ -55,16 +55,21 @@
                         $isWeekend = $currentDate->isWeekend();
                     @endphp
 
-                    <div class="p-3 rounded-lg border {{ $isToday ? 'border-primary bg-primaryExtraLight' : 'border-gray-200 bg-white' }}
-                                {{ $isWeekend ? 'bg-gray-50' : '' }} hover:shadow-md transition-all duration-200">
-                        <div class="text-right mb-1">
-                            <span class="text-sm font-medium {{ $isToday ? 'text-primary font-bold' : 'text-gray-700' }}">
-                                {{ $day }}
-                            </span>
-                        </div>
 
-                        @if($dayData && $dayData['total_absen'] > 0)
-                            <a href="{{ route('absen.detailHari', $dateKey) }}" class="block text-center">
+                    <a href="{{ route('absen.detailHari', $dateKey) }}" class="block text-center">
+
+                        <div
+                            class="p-3 rounded-lg border {{ $isToday ? 'border-primary bg-primaryExtraLight' : 'border-gray-200 bg-white' }}
+                                                        {{ $isWeekend ? 'bg-gray-50' : '' }} hover:shadow-md transition-all duration-200">
+                            <div class="text-right mb-1">
+                                <span
+                                    class="text-sm font-medium {{ $isToday ? 'text-primary font-bold' : 'text-gray-700' }}">
+                                    {{ $day }}
+                                </span>
+                            </div>
+
+                            @if($dayData && $dayData['total_absen'] > 0)
+
                                 <div class="text-xs font-semibold text-primary mb-1">
                                     {{ $dayData['total_absen'] }} Absen
                                 </div>
@@ -85,16 +90,19 @@
                                         </span>
                                     @endif
                                 </div>
-                            </a>
-                        @else
-                            <div class="text-center text-xs text-gray-400">
-                                -
-                            </div>
-                        @endif
-                    </div>
+                            @else
+                                <div class="text-center text-xs text-gray-400">
+                                    -
+                                </div>
+                            @endif
+
+
+                        </div>
                 @endfor
             </div>
         </div>
+        </a>
+
 
         {{-- Legend --}}
         <div class="bg-white rounded-2xl shadow-xl p-6">
