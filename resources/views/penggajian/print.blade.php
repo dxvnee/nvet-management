@@ -421,10 +421,14 @@
                         @if(!empty($detail['keterangan_penambahan']))
                             <tr><td colspan="2" style="color: #888; font-style: italic;">{{ $detail['keterangan_penambahan'] }}</td></tr>
                         @endif
-                        <tr>
-                            <td>Lain-lain Insentif</td>
-                            <td style="text-align: right;">+ Rp {{ number_format($detail['lain_lain_insentif'] ?? 0, 0, ',', '.') }}</td>
-                        </tr>
+                        @if(isset($detail['lain_lain_items']) && is_array($detail['lain_lain_items']))
+                            @foreach($detail['lain_lain_items'] as $item)
+                                <tr>
+                                    <td>{{ $item['nama'] ?? 'Item' }}</td>
+                                    <td style="text-align: right;">{{ $item['qty'] ?? 0 }} × Rp {{ number_format($item['harga'] ?? 0, 0, ',', '.') }} = Rp {{ number_format(($item['qty'] ?? 0) * ($item['harga'] ?? 0), 0, ',', '.') }}</td>
+                                </tr>
+                            @endforeach
+                        @endif
                     </table>
                 @elseif($jabatan === 'Paramedis')
                     <table>
@@ -444,10 +448,14 @@
                             <td>Grooming</td>
                             <td style="text-align: right;">{{ $detail['grooming_qty'] ?? 0 }} × Rp {{ number_format($detail['grooming_harga'] ?? 0, 0, ',', '.') }} = Rp {{ number_format(($detail['grooming_qty'] ?? 0) * ($detail['grooming_harga'] ?? 0), 0, ',', '.') }}</td>
                         </tr>
-                        <tr>
-                            <td>Lain-lain Insentif</td>
-                            <td style="text-align: right;">+ Rp {{ number_format($detail['lain_lain_insentif'] ?? 0, 0, ',', '.') }}</td>
-                        </tr>
+                        @if(isset($detail['lain_lain_items']) && is_array($detail['lain_lain_items']))
+                            @foreach($detail['lain_lain_items'] as $item)
+                                <tr>
+                                    <td>{{ $item['nama'] ?? 'Item' }}</td>
+                                    <td style="text-align: right;">{{ $item['qty'] ?? 0 }} × Rp {{ number_format($item['harga'] ?? 0, 0, ',', '.') }} = Rp {{ number_format(($item['qty'] ?? 0) * ($item['harga'] ?? 0), 0, ',', '.') }}</td>
+                                </tr>
+                            @endforeach
+                        @endif
                     </table>
                 @elseif($jabatan === 'FO')
                     <table>
@@ -459,10 +467,14 @@
                             <td>Appointment</td>
                             <td style="text-align: right;">{{ $detail['appointment_qty'] ?? 0 }} × Rp {{ number_format($detail['appointment_harga'] ?? 0, 0, ',', '.') }} = Rp {{ number_format(($detail['appointment_qty'] ?? 0) * ($detail['appointment_harga'] ?? 0), 0, ',', '.') }}</td>
                         </tr>
-                        <tr>
-                            <td>Lain-lain Insentif</td>
-                            <td style="text-align: right;">+ Rp {{ number_format($detail['lain_lain_insentif'] ?? 0, 0, ',', '.') }}</td>
-                        </tr>
+                        @if(isset($detail['lain_lain_items']) && is_array($detail['lain_lain_items']))
+                            @foreach($detail['lain_lain_items'] as $item)
+                                <tr>
+                                    <td>{{ $item['nama'] ?? 'Item' }}</td>
+                                    <td style="text-align: right;">{{ $item['qty'] ?? 0 }} × Rp {{ number_format($item['harga'] ?? 0, 0, ',', '.') }} = Rp {{ number_format(($item['qty'] ?? 0) * ($item['harga'] ?? 0), 0, ',', '.') }}</td>
+                                </tr>
+                            @endforeach
+                        @endif
                     </table>
                 @elseif($jabatan === 'Tech')
                     <table>
@@ -470,10 +482,14 @@
                             <td>Antar Konten</td>
                             <td style="text-align: right;">{{ $detail['antar_konten_qty'] ?? 0 }} × Rp {{ number_format($detail['antar_konten_harga'] ?? 0, 0, ',', '.') }} = Rp {{ number_format(($detail['antar_konten_qty'] ?? 0) * ($detail['antar_konten_harga'] ?? 0), 0, ',', '.') }}</td>
                         </tr>
-                        <tr>
-                            <td>Lain-lain Insentif</td>
-                            <td style="text-align: right;">+ Rp {{ number_format($detail['lain_lain_insentif'] ?? 0, 0, ',', '.') }}</td>
-                        </tr>
+                        @if(isset($detail['lain_lain_items']) && is_array($detail['lain_lain_items']))
+                            @foreach($detail['lain_lain_items'] as $item)
+                                <tr>
+                                    <td>{{ $item['nama'] ?? 'Item' }}</td>
+                                    <td style="text-align: right;">{{ $item['qty'] ?? 0 }} × Rp {{ number_format($item['harga'] ?? 0, 0, ',', '.') }} = Rp {{ number_format(($item['qty'] ?? 0) * ($item['harga'] ?? 0), 0, ',', '.') }}</td>
+                                </tr>
+                            @endforeach
+                        @endif
                     </table>
                 @endif
             </div>

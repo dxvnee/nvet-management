@@ -251,6 +251,16 @@ class PenggajianController extends Controller
     {
         $total = 0;
 
+        // Calculate lain-lain items total
+        $lainLainItemsTotal = 0;
+        if (isset($detail['lain_lain_items']) && is_array($detail['lain_lain_items'])) {
+            foreach ($detail['lain_lain_items'] as $item) {
+                $qty = intval($item['qty'] ?? 0);
+                $harga = floatval($item['harga'] ?? 0);
+                $lainLainItemsTotal += $qty * $harga;
+            }
+        }
+
         switch ($jabatan) {
             case 'Dokter':
                 // Transaksi - (Pengurangan + Penambahan)% + lain-lain
@@ -258,9 +268,8 @@ class PenggajianController extends Controller
                 $pengurangan = floatval($detail['pengurangan'] ?? 0);
                 $penambahan = floatval($detail['penambahan'] ?? 0);
                 $persenan = floatval($detail['persenan'] ?? 0) / 100;
-                $lainLain = floatval($detail['lain_lain_insentif'] ?? 0);
 
-                $total = ($transaksi - $pengurangan + $penambahan) * $persenan + $lainLain;
+                $total = ($transaksi - $pengurangan + $penambahan) * $persenan + $lainLainItemsTotal;
                 break;
 
             case 'Paramedis':
@@ -269,26 +278,23 @@ class PenggajianController extends Controller
                 $rawatInap = (intval($detail['rawat_inap_qty'] ?? 0) * floatval($detail['rawat_inap_harga'] ?? 0));
                 $visit = (intval($detail['visit_qty'] ?? 0) * floatval($detail['visit_harga'] ?? 0));
                 $grooming = (intval($detail['grooming_qty'] ?? 0) * floatval($detail['grooming_harga'] ?? 0));
-                $lainLain = floatval($detail['lain_lain_insentif'] ?? 0);
 
-                $total = $antarJemput + $rawatInap + $visit + $grooming + $lainLain;
+                $total = $antarJemput + $rawatInap + $visit + $grooming + $lainLainItemsTotal;
                 break;
 
             case 'FO':
                 // Review + Appointment + lain-lain
                 $review = (intval($detail['review_qty'] ?? 0) * floatval($detail['review_harga'] ?? 0));
                 $appointment = (intval($detail['appointment_qty'] ?? 0) * floatval($detail['appointment_harga'] ?? 0));
-                $lainLain = floatval($detail['lain_lain_insentif'] ?? 0);
 
-                $total = $review + $appointment + $lainLain;
+                $total = $review + $appointment + $lainLainItemsTotal;
                 break;
 
             case 'Tech':
                 // Antar konten + lain-lain
                 $antarKonten = (intval($detail['antar_konten_qty'] ?? 0) * floatval($detail['antar_konten_harga'] ?? 0));
-                $lainLain = floatval($detail['lain_lain_insentif'] ?? 0);
 
-                $total = $antarKonten + $lainLain;
+                $total = $antarKonten + $lainLainItemsTotal;
                 break;
         }
 

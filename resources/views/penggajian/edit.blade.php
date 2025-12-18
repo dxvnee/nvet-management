@@ -176,12 +176,52 @@
                                     class="w-full mt-2 px-4 py-2 rounded-lg border border-gray-300 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20">
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Lain-lain (Insentif)</label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">Rp</span>
-                                <input type="number" name="insentif_detail[lain_lain_insentif]" x-model="dokter.lainLain"
-                                    class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
+                        <!-- Dynamic Lain-lain Items -->
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <label class="block text-sm font-medium text-gray-700">Insentif Lain-lain</label>
+                                <button type="button" @click="dokter.lainLainItems.push({nama: '', qty: 1, harga: 0})"
+                                    class="px-3 py-1 bg-green-100 hover:bg-green-200 text-green-700 text-sm font-medium rounded-lg transition-colors flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    Tambah Item
+                                </button>
+                            </div>
+                            <div class="space-y-2" x-show="dokter.lainLainItems.length > 0">
+                                <template x-for="(item, index) in dokter.lainLainItems" :key="index">
+                                    <div class="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                                        <input type="text" :name="'insentif_detail[lain_lain_items][' + index + '][nama]'"
+                                            x-model="item.nama" placeholder="Nama item..."
+                                            class="flex-1 px-3 py-2 rounded border border-gray-300 text-sm focus:border-primary">
+                                        <input type="number" :name="'insentif_detail[lain_lain_items][' + index + '][qty]'"
+                                            x-model.number="item.qty" placeholder="Qty" min="0"
+                                            class="w-20 px-2 py-2 rounded border border-gray-300 text-sm focus:border-primary text-center">
+                                        <div class="relative">
+                                            <span
+                                                class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 text-xs">Rp</span>
+                                            <input type="number"
+                                                :name="'insentif_detail[lain_lain_items][' + index + '][harga]'"
+                                                x-model.number="item.harga" placeholder="Harga" min="0"
+                                                class="w-32 pl-8 pr-2 py-2 rounded border border-gray-300 text-sm focus:border-primary">
+                                        </div>
+                                        <span class="text-sm text-gray-600 w-24 text-right"
+                                            x-text="'Rp ' + formatNumber(item.qty * item.harga)"></span>
+                                        <button type="button" @click="dokter.lainLainItems.splice(index, 1)"
+                                            class="p-1 text-red-500 hover:text-red-700 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="text-sm text-gray-600" x-show="dokter.lainLainItems.length > 0">
+                                Total Lain-lain: Rp <span
+                                    x-text="formatNumber(calculateLainLainTotal(dokter.lainLainItems))"></span>
                             </div>
                         </div>
                         <div class="bg-green-50 rounded-xl p-4 border border-green-200">
@@ -265,12 +305,52 @@
                                         x-text="formatNumber(paramedis.groomingQty * paramedis.groomingHarga)"></span></p>
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Lain-lain (Insentif)</label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">Rp</span>
-                                <input type="number" name="insentif_detail[lain_lain_insentif]" x-model="paramedis.lainLain"
-                                    class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
+                        <!-- Dynamic Lain-lain Items -->
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <label class="block text-sm font-medium text-gray-700">Insentif Lain-lain</label>
+                                <button type="button" @click="paramedis.lainLainItems.push({nama: '', qty: 1, harga: 0})"
+                                    class="px-3 py-1 bg-green-100 hover:bg-green-200 text-green-700 text-sm font-medium rounded-lg transition-colors flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    Tambah Item
+                                </button>
+                            </div>
+                            <div class="space-y-2" x-show="paramedis.lainLainItems.length > 0">
+                                <template x-for="(item, index) in paramedis.lainLainItems" :key="index">
+                                    <div class="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                                        <input type="text" :name="'insentif_detail[lain_lain_items][' + index + '][nama]'"
+                                            x-model="item.nama" placeholder="Nama item..."
+                                            class="flex-1 px-3 py-2 rounded border border-gray-300 text-sm focus:border-primary">
+                                        <input type="number" :name="'insentif_detail[lain_lain_items][' + index + '][qty]'"
+                                            x-model.number="item.qty" placeholder="Qty" min="0"
+                                            class="w-20 px-2 py-2 rounded border border-gray-300 text-sm focus:border-primary text-center">
+                                        <div class="relative">
+                                            <span
+                                                class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 text-xs">Rp</span>
+                                            <input type="number"
+                                                :name="'insentif_detail[lain_lain_items][' + index + '][harga]'"
+                                                x-model.number="item.harga" placeholder="Harga" min="0"
+                                                class="w-32 pl-8 pr-2 py-2 rounded border border-gray-300 text-sm focus:border-primary">
+                                        </div>
+                                        <span class="text-sm text-gray-600 w-24 text-right"
+                                            x-text="'Rp ' + formatNumber(item.qty * item.harga)"></span>
+                                        <button type="button" @click="paramedis.lainLainItems.splice(index, 1)"
+                                            class="p-1 text-red-500 hover:text-red-700 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="text-sm text-gray-600" x-show="paramedis.lainLainItems.length > 0">
+                                Total Lain-lain: Rp <span
+                                    x-text="formatNumber(calculateLainLainTotal(paramedis.lainLainItems))"></span>
                             </div>
                         </div>
                         <div class="bg-green-50 rounded-xl p-4 border border-green-200">
@@ -317,12 +397,52 @@
                                         x-text="formatNumber(fo.appointmentQty * fo.appointmentHarga)"></span></p>
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Lain-lain (Insentif)</label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">Rp</span>
-                                <input type="number" name="insentif_detail[lain_lain_insentif]" x-model="fo.lainLain"
-                                    class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
+                        <!-- Dynamic Lain-lain Items -->
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <label class="block text-sm font-medium text-gray-700">Insentif Lain-lain</label>
+                                <button type="button" @click="fo.lainLainItems.push({nama: '', qty: 1, harga: 0})"
+                                    class="px-3 py-1 bg-green-100 hover:bg-green-200 text-green-700 text-sm font-medium rounded-lg transition-colors flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    Tambah Item
+                                </button>
+                            </div>
+                            <div class="space-y-2" x-show="fo.lainLainItems.length > 0">
+                                <template x-for="(item, index) in fo.lainLainItems" :key="index">
+                                    <div class="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                                        <input type="text" :name="'insentif_detail[lain_lain_items][' + index + '][nama]'"
+                                            x-model="item.nama" placeholder="Nama item..."
+                                            class="flex-1 px-3 py-2 rounded border border-gray-300 text-sm focus:border-primary">
+                                        <input type="number" :name="'insentif_detail[lain_lain_items][' + index + '][qty]'"
+                                            x-model.number="item.qty" placeholder="Qty" min="0"
+                                            class="w-20 px-2 py-2 rounded border border-gray-300 text-sm focus:border-primary text-center">
+                                        <div class="relative">
+                                            <span
+                                                class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 text-xs">Rp</span>
+                                            <input type="number"
+                                                :name="'insentif_detail[lain_lain_items][' + index + '][harga]'"
+                                                x-model.number="item.harga" placeholder="Harga" min="0"
+                                                class="w-32 pl-8 pr-2 py-2 rounded border border-gray-300 text-sm focus:border-primary">
+                                        </div>
+                                        <span class="text-sm text-gray-600 w-24 text-right"
+                                            x-text="'Rp ' + formatNumber(item.qty * item.harga)"></span>
+                                        <button type="button" @click="fo.lainLainItems.splice(index, 1)"
+                                            class="p-1 text-red-500 hover:text-red-700 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="text-sm text-gray-600" x-show="fo.lainLainItems.length > 0">
+                                Total Lain-lain: Rp <span
+                                    x-text="formatNumber(calculateLainLainTotal(fo.lainLainItems))"></span>
                             </div>
                         </div>
                         <div class="bg-green-50 rounded-xl p-4 border border-green-200">
@@ -349,12 +469,52 @@
                             <p class="text-xs text-gray-500 mt-1">= Rp <span
                                     x-text="formatNumber(tech.antarKontenQty * tech.antarKontenHarga)"></span></p>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Lain-lain (Insentif)</label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">Rp</span>
-                                <input type="number" name="insentif_detail[lain_lain_insentif]" x-model="tech.lainLain"
-                                    class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
+                        <!-- Dynamic Lain-lain Items -->
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <label class="block text-sm font-medium text-gray-700">Insentif Lain-lain</label>
+                                <button type="button" @click="tech.lainLainItems.push({nama: '', qty: 1, harga: 0})"
+                                    class="px-3 py-1 bg-green-100 hover:bg-green-200 text-green-700 text-sm font-medium rounded-lg transition-colors flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    Tambah Item
+                                </button>
+                            </div>
+                            <div class="space-y-2" x-show="tech.lainLainItems.length > 0">
+                                <template x-for="(item, index) in tech.lainLainItems" :key="index">
+                                    <div class="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                                        <input type="text" :name="'insentif_detail[lain_lain_items][' + index + '][nama]'"
+                                            x-model="item.nama" placeholder="Nama item..."
+                                            class="flex-1 px-3 py-2 rounded border border-gray-300 text-sm focus:border-primary">
+                                        <input type="number" :name="'insentif_detail[lain_lain_items][' + index + '][qty]'"
+                                            x-model.number="item.qty" placeholder="Qty" min="0"
+                                            class="w-20 px-2 py-2 rounded border border-gray-300 text-sm focus:border-primary text-center">
+                                        <div class="relative">
+                                            <span
+                                                class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 text-xs">Rp</span>
+                                            <input type="number"
+                                                :name="'insentif_detail[lain_lain_items][' + index + '][harga]'"
+                                                x-model.number="item.harga" placeholder="Harga" min="0"
+                                                class="w-32 pl-8 pr-2 py-2 rounded border border-gray-300 text-sm focus:border-primary">
+                                        </div>
+                                        <span class="text-sm text-gray-600 w-24 text-right"
+                                            x-text="'Rp ' + formatNumber(item.qty * item.harga)"></span>
+                                        <button type="button" @click="tech.lainLainItems.splice(index, 1)"
+                                            class="p-1 text-red-500 hover:text-red-700 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="text-sm text-gray-600" x-show="tech.lainLainItems.length > 0">
+                                Total Lain-lain: Rp <span
+                                    x-text="formatNumber(calculateLainLainTotal(tech.lainLainItems))"></span>
                             </div>
                         </div>
                         <div class="bg-green-50 rounded-xl p-4 border border-green-200">
@@ -449,7 +609,7 @@
                     persenan: {{ $detail['persenan'] ?? 0 }},
                     pengurangan: {{ $detail['pengurangan'] ?? 0 }},
                     penambahan: {{ $detail['penambahan'] ?? 0 }},
-                    lainLain: {{ $detail['lain_lain_insentif'] ?? 0 }}
+                    lainLainItems: @json($detail['lain_lain_items'] ?? [])
                 },
 
                 paramedis: {
@@ -457,22 +617,28 @@
                     rawatInapQty: {{ $detail['rawat_inap_qty'] ?? 0 }}, rawatInapHarga: {{ $detail['rawat_inap_harga'] ?? 0 }},
                     visitQty: {{ $detail['visit_qty'] ?? 0 }}, visitHarga: {{ $detail['visit_harga'] ?? 0 }},
                     groomingQty: {{ $detail['grooming_qty'] ?? 0 }}, groomingHarga: {{ $detail['grooming_harga'] ?? 0 }},
-                    lainLain: {{ $detail['lain_lain_insentif'] ?? 0 }}
+                    lainLainItems: @json($detail['lain_lain_items'] ?? [])
                 },
 
                 fo: {
                     reviewQty: {{ $detail['review_qty'] ?? 0 }}, reviewHarga: {{ $detail['review_harga'] ?? 0 }},
                     appointmentQty: {{ $detail['appointment_qty'] ?? 0 }}, appointmentHarga: {{ $detail['appointment_harga'] ?? 0 }},
-                    lainLain: {{ $detail['lain_lain_insentif'] ?? 0 }}
+                    lainLainItems: @json($detail['lain_lain_items'] ?? [])
                 },
 
                 tech: {
                     antarKontenQty: {{ $detail['antar_konten_qty'] ?? 0 }}, antarKontenHarga: {{ $detail['antar_konten_harga'] ?? 0 }},
-                    lainLain: {{ $detail['lain_lain_insentif'] ?? 0 }}
+                    lainLainItems: @json($detail['lain_lain_items'] ?? [])
                 },
 
                 formatNumber(num) {
                     return new Intl.NumberFormat('id-ID').format(num || 0);
+                },
+
+                calculateLainLainTotal(items) {
+                    return items.reduce((total, item) => {
+                        return total + ((parseInt(item.qty) || 0) * (parseFloat(item.harga) || 0));
+                    }, 0);
                 },
 
                 calculateDokterInsentif() {
@@ -480,7 +646,7 @@
                     const pengurangan = parseFloat(this.dokter.pengurangan) || 0;
                     const penambahan = parseFloat(this.dokter.penambahan) || 0;
                     const persenan = (parseFloat(this.dokter.persenan) || 0) / 100;
-                    const lainLain = parseFloat(this.dokter.lainLain) || 0;
+                    const lainLain = this.calculateLainLainTotal(this.dokter.lainLainItems);
                     return (transaksi - pengurangan + penambahan) * persenan + lainLain;
                 },
 
@@ -489,20 +655,20 @@
                     const rawatInap = (parseInt(this.paramedis.rawatInapQty) || 0) * (parseFloat(this.paramedis.rawatInapHarga) || 0);
                     const visit = (parseInt(this.paramedis.visitQty) || 0) * (parseFloat(this.paramedis.visitHarga) || 0);
                     const grooming = (parseInt(this.paramedis.groomingQty) || 0) * (parseFloat(this.paramedis.groomingHarga) || 0);
-                    const lainLain = parseFloat(this.paramedis.lainLain) || 0;
+                    const lainLain = this.calculateLainLainTotal(this.paramedis.lainLainItems);
                     return antarJemput + rawatInap + visit + grooming + lainLain;
                 },
 
                 calculateFOInsentif() {
                     const review = (parseInt(this.fo.reviewQty) || 0) * (parseFloat(this.fo.reviewHarga) || 0);
                     const appointment = (parseInt(this.fo.appointmentQty) || 0) * (parseFloat(this.fo.appointmentHarga) || 0);
-                    const lainLain = parseFloat(this.fo.lainLain) || 0;
+                    const lainLain = this.calculateLainLainTotal(this.fo.lainLainItems);
                     return review + appointment + lainLain;
                 },
 
                 calculateTechInsentif() {
                     const antarKonten = (parseInt(this.tech.antarKontenQty) || 0) * (parseFloat(this.tech.antarKontenHarga) || 0);
-                    const lainLain = parseFloat(this.tech.lainLain) || 0;
+                    const lainLain = this.calculateLainLainTotal(this.tech.lainLainItems);
                     return antarKonten + lainLain;
                 },
 
