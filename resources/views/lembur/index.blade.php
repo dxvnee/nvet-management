@@ -3,135 +3,6 @@
     <x-slot name="subtle">Kelola jam lembur Anda</x-slot>
 
     <div class="space-y-6">
-
-        <!-- Active Lembur / Start Button -->
-        <div class="bg-gradient-to-br bg-white rounded-2xl shadow-xl p-5 animate-slide-up">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="p-3 bg-gradient-to-br from-primary to-primaryDark text-white rounded-xl shadow-lg">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <h2 class="text-xl font-bold text-gray-800">Lembur</h2>
-            </div>
-
-            @if($activeLembur)
-                <div class="text-center space-y-6">
-                    <!-- Timer Display -->
-                    <div class="relative">
-                        <div
-                            class="inline-flex p-5 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white mb-4 shadow-2xl animate-pulse">
-                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <h2 class="text-3xl font-bold text-gray-800">Sedang Lembur</h2>
-                        <p class="text-gray-600">Dimulai pukul <span
-                                class="font-semibold text-blue-600">{{ \Carbon\Carbon::parse($activeLembur->jam_mulai)->format('H:i') }}</span>
-                        </p>
-
-                        <!-- Real-time Timer -->
-                        <div class="text-sm text-gray-500 mb-1">Lama Lembur Saat Ini</div>
-                        <div id="current-timer" class="text-2xl font-bold text-blue-600 font-mono"
-                            data-start="{{ $activeLembur->jam_mulai }}">
-                            00:00:00
-                        </div>
-                    </div>
-
-                    <div class="max-w-lg mx-auto bg-white/60 backdrop-blur-sm rounded-2xl p-5 shadow-xl border border-blue-200">
-                        <div>
-                            <label class="text-sm font-semibold text-gray-700 mb-3 text-left flex items-center gap-2">
-                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                    </path>
-                                </svg>
-                                Keterangan Lembur
-                            </label>
-                            <textarea id="keterangan-lembur" name="keterangan" rows="4" required
-                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all resize-none"
-                                placeholder="Jelaskan detail pekerjaan yang dilakukan selama lembur..."></textarea>
-                        </div>
-                        <button type="button" onclick="openCameraModal('selesai')"
-                            class="w-full mt-4 px-6 py-4 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold rounded-xl shadow-lg transition-all transform hover:scale-105 hover:shadow-xl flex items-center justify-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
-                                class="bi bi-check-lg" viewBox="0 0 16 16">
-                                <path
-                                    d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z" />
-                            </svg>
-                            Selesai Lembur
-                        </button>
-                    </div>
-                </div>
-            @else
-                <div class="text-center space-y-6 mb-2">
-                    @if($canLembur)
-                        <div class="relative">
-                            <div
-                                class="inline-flex p-5 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 text-white mb-4 shadow-2xl">
-                                <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
-                                    </path>
-                                </svg>
-                            </div>
-                        </div>
-
-                        <div class="space-y-2">
-                            <h2 class="text-3xl font-bold text-gray-800">Siap Mulai Lembur</h2>
-                            <p class="text-gray-600">Anda dapat memulai lembur karena sudah melewati jam pulang</p>
-                            <div
-                                class="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                Jam pulang: {{ $jamPulangToday->format('H:i') }}
-                            </div>
-                        </div>
-
-                        <button type="button" onclick="openCameraModal('mulai')"
-                            class="px-10 py-4 bg-gradient-to-r from-primary to-primaryDark hover:from-primaryDark hover:to-primaryExtraDark text-white font-bold rounded-2xl shadow-2xl transition-all transform hover:scale-105 hover:shadow-3xl flex items-center mx-auto text-lg">
-                            <svg class="w-7 h-7 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z">
-                                </path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            Mulai Lembur
-                        </button>
-                    @else
-                        <div
-                            class="inline-flex p-5 rounded-full bg-gradient-to-r from-gray-300 to-gray-400 text-gray-500 mb-4 shadow-xl">
-                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-
-                        <div class="space-y-2">
-                            <h2 class="text-2xl font-bold text-gray-600">Belum Waktunya Lembur</h2>
-                            <p class="text-gray-500">Tombol lembur akan aktif setelah jam pulang</p>
-                            <div
-                                class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm font-medium">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                Jam pulang: {{ $jamPulangToday->format('H:i') }}
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            @endif
-        </div>
-
         <!-- Statistics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5 animate-slide-up-delay-1">
             <!-- Total Lembur Bulan Ini -->
@@ -141,8 +12,8 @@
                     <div>
                         <p class="text-sm font-medium text-emerald-600">Total Lembur Bulan Ini</p>
                         <p class="text-2xl font-bold text-emerald-800">
-                            {{ floor(collect($riwayatLembur)->where('status', 'approved')->where('tanggal', '>=', now()->startOfMonth())->sum('durasi_menit') / 60) }}j
-                            {{ collect($riwayatLembur)->where('status', 'approved')->where('tanggal', '>=', now()->startOfMonth())->sum('durasi_menit') % 60 }}m
+                            {{ floor($totalLemburBulanIni / 60) }}j
+                            {{ $totalLemburBulanIni % 60 }}m
                         </p>
                     </div>
                     <div class="p-3 bg-emerald-500 rounded-full text-white">
@@ -162,7 +33,7 @@
                     <div>
                         <p class="text-sm font-medium text-yellow-600">Menunggu Approval</p>
                         <p class="text-2xl font-bold text-yellow-800">
-                            {{ collect($riwayatLembur)->where('status', 'pending')->count() }}
+                            {{ $menungguApproval }}
                         </p>
                     </div>
                     <div class="p-3 bg-yellow-500 rounded-full text-white">
@@ -180,7 +51,7 @@
                     <div>
                         <p class="text-sm font-medium text-blue-600">Lembur Disetujui</p>
                         <p class="text-2xl font-bold text-blue-800">
-                            {{ collect($riwayatLembur)->where('status', 'approved')->count() }}
+                            {{ $lemburDisetujui }}
                         </p>
                     </div>
                     <div class="p-3 bg-blue-500 rounded-full text-white">

@@ -53,6 +53,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/absensi/user', [AbsenController::class, 'absensiUser'])->name('absen.user');
         Route::get('/absen/{absen}/edit', [AbsenController::class, 'edit'])->name('absen.edit');
         Route::patch('/absen/{absen}', [AbsenController::class, 'update'])->name('absen.update');
+        Route::delete('/absen/{absen}', [AbsenController::class, 'destroy'])->name('absen.destroy');
     });
 });
 

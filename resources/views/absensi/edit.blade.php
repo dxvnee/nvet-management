@@ -32,73 +32,127 @@
                 @csrf
                 @method('PATCH')
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {{-- Jam Masuk --}}
-                    <div>
-                        <label for="jam_masuk" class="block text-sm font-medium text-gray-700 mb-2">Jam Masuk</label>
-                        <input type="time" name="jam_masuk" id="jam_masuk"
-                            value="{{ $absen->jam_masuk ? $absen->jam_masuk->format('H:i') : '' }}"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
-                    </div>
+                {{-- Waktu Absensi --}}
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Waktu Absensi
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- Jam Masuk --}}
+                        <div>
+                            <label for="jam_masuk" class="block text-sm font-medium text-gray-700 mb-2">Jam Masuk</label>
+                            <input type="time" name="jam_masuk" id="jam_masuk"
+                                value="{{ $absen->jam_masuk ? $absen->jam_masuk->format('H:i') : '' }}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
+                        </div>
 
-                    {{-- Jam Pulang --}}
-                    <div>
-                        <label for="jam_pulang" class="block text-sm font-medium text-gray-700 mb-2">Jam Pulang</label>
-                        <input type="time" name="jam_pulang" id="jam_pulang"
-                            value="{{ $absen->jam_pulang ? $absen->jam_pulang->format('H:i') : '' }}"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
-                    </div>
-
-                    {{-- Izin --}}
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Status Izin</label>
-                        <div class="flex items-center">
-                            <input type="checkbox" name="izin" id="izin" value="1" {{ $absen->izin ? 'checked' : '' }}
-                                class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
-                            <label for="izin" class="ml-2 block text-sm text-gray-900">
-                                Izin
-                            </label>
+                        {{-- Jam Pulang --}}
+                        <div>
+                            <label for="jam_pulang" class="block text-sm font-medium text-gray-700 mb-2">Jam Pulang</label>
+                            <input type="time" name="jam_pulang" id="jam_pulang"
+                                value="{{ $absen->jam_pulang ? $absen->jam_pulang->format('H:i') : '' }}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
                         </div>
                     </div>
+                </div>
 
-                    {{-- Izin Keterangan --}}
-                    <div>
-                        <label for="izin_keterangan" class="block text-sm font-medium text-gray-700 mb-2">Keterangan
-                            Izin</label>
-                        <textarea name="izin_keterangan" id="izin_keterangan" rows="3"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
-                            placeholder="Jelaskan alasan izin...">{{ $absen->izin_keterangan }}</textarea>
+                {{-- Status Kehadiran --}}
+                <div class="border-t pt-6">
+                    <h4 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Status Kehadiran
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Terlambat?</label>
+                            <div class="flex items-center h-10">
+                                <input type="hidden" name="telat" value="0">
+                                <input type="checkbox" name="telat" id="telat" value="1" {{ $absen->telat ? 'checked' : '' }}
+                                    class="h-4 w-4 text-red-500 focus:ring-red-500 border-gray-300 rounded">
+                                <label for="telat" class="ml-2 block text-sm text-gray-900">
+                                    Ya, terlambat
+                                </label>
+                            </div>
+                        </div>
+
+                        {{-- Menit Telat --}}
+                        <div>
+                            <label for="menit_telat" class="block text-sm font-medium text-gray-700 mb-2">Menit Terlambat</label>
+                            <input type="number" name="menit_telat" id="menit_telat" min="0"
+                                value="{{ $absen->menit_telat ?? 0 }}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Izin --}}
+                <div class="border-t pt-6">
+                    <h4 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Izin
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- Checkbox Izin --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Status Izin</label>
+                            <div class="flex items-center h-10">
+                                <input type="hidden" name="izin" value="0">
+                                <input type="checkbox" name="izin" id="izin" value="1" {{ $absen->izin ? 'checked' : '' }}
+                                    class="h-4 w-4 text-yellow-500 focus:ring-yellow-500 border-gray-300 rounded">
+                                <label for="izin" class="ml-2 block text-sm text-gray-900">
+                                    Izin hari ini
+                                </label>
+                            </div>
+                        </div>
+
+                        {{-- Izin Keterangan --}}
+                        <div>
+                            <label for="izin_keterangan" class="block text-sm font-medium text-gray-700 mb-2">Keterangan Izin</label>
+                            <textarea name="izin_keterangan" id="izin_keterangan" rows="2"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                                placeholder="Jelaskan alasan izin...">{{ $absen->izin_keterangan }}</textarea>
+                        </div>
                     </div>
                 </div>
 
                 {{-- Lokasi --}}
                 <div class="border-t pt-6">
-                    <h4 class="text-lg font-semibold mb-4">Lokasi (Opsional)</h4>
+                    <h4 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        Lokasi (Opsional)
+                    </h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="lat_masuk" class="block text-sm font-medium text-gray-700 mb-2">Latitude
-                                Masuk</label>
+                            <label for="lat_masuk" class="block text-sm font-medium text-gray-700 mb-2">Latitude Masuk</label>
                             <input type="number" step="any" name="lat_masuk" id="lat_masuk"
                                 value="{{ $absen->lat_masuk }}"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
                         </div>
                         <div>
-                            <label for="lng_masuk" class="block text-sm font-medium text-gray-700 mb-2">Longitude
-                                Masuk</label>
+                            <label for="lng_masuk" class="block text-sm font-medium text-gray-700 mb-2">Longitude Masuk</label>
                             <input type="number" step="any" name="lng_masuk" id="lng_masuk"
                                 value="{{ $absen->lng_masuk }}"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
                         </div>
                         <div>
-                            <label for="lat_pulang" class="block text-sm font-medium text-gray-700 mb-2">Latitude
-                                Pulang</label>
+                            <label for="lat_pulang" class="block text-sm font-medium text-gray-700 mb-2">Latitude Pulang</label>
                             <input type="number" step="any" name="lat_pulang" id="lat_pulang"
                                 value="{{ $absen->lat_pulang }}"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
                         </div>
                         <div>
-                            <label for="lng_pulang" class="block text-sm font-medium text-gray-700 mb-2">Longitude
-                                Pulang</label>
+                            <label for="lng_pulang" class="block text-sm font-medium text-gray-700 mb-2">Longitude Pulang</label>
                             <input type="number" step="any" name="lng_pulang" id="lng_pulang"
                                 value="{{ $absen->lng_pulang }}"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
@@ -107,17 +161,28 @@
                 </div>
 
                 {{-- Submit Buttons --}}
-                <div class="flex gap-4 pt-6 border-t">
+                <div class="flex gap-4 pt-6 justify-end border-t">
                     <button type="submit"
                         class="btn-primary px-6 py-2 rounded-lg hover:bg-primaryDark transition-colors">
                         Simpan Perubahan
                     </button>
-                    <a href="{{ url()->previous() }}"
-                        class="btn-secondary px-6 py-2 rounded-lg hover:bg-primary hover:text-white transition-colors">
-                        Batal
-                    </a>
+
                 </div>
             </form>
+
+            {{-- Delete Form --}}
+            <div class="flex justify-end w pt-4">
+                <form method="POST" action="{{ route('absen.destroy', $absen) }}"
+                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus absensi ini? Tindakan ini tidak dapat dibatalkan.')"
+                    class="inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                        class="btn-danger px-6 py-2 rounded-lg hover:bg-red-700 hover:scale-[1.01] hover:text-white transition-colors">
+                        Hapus Absensi
+                    </button>
+                </form>
+            </div>
         </div>
 
         {{-- Current Status --}}

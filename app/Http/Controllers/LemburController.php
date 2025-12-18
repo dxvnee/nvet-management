@@ -17,6 +17,8 @@ class LemburController extends Controller
         $this->photoService = $photoService;
     }
 
+    
+
     public function index()
     {
         $user = Auth::user();
@@ -28,10 +30,22 @@ class LemburController extends Controller
             ->whereNull('jam_selesai')
             ->first();
 
-        // Riwayat lembur
+        // Riwayat lembur untuk pagination
         $riwayatLembur = Lembur::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
+
+        // Data statistik - ambil semua data tanpa pagination
+        $allLemburData = Lembur::where('user_id', $user->id)->get();
+
+        // Hitung statistik
+        $totalLemburBulanIni = $allLemburData->where('status', 'approved')
+            ->where('tanggal', '>=', now()->startOfMonth())
+            ->sum('durasi_menit');
+
+        $menungguApproval = $allLemburData->where('status', 'pending')->count();
+
+        $lemburDisetujui = $allLemburData->where('status', 'approved')->count();
 
         // Cek apakah sudah lewat jam pulang (asumsi jam pulang ada di user)
         // Jika tidak ada field jam_pulang, default ke 17:00 atau ambil dari shift
@@ -50,7 +64,15 @@ class LemburController extends Controller
 
         $canLembur = $today->gt($jamPulangToday);
 
-        return view('lembur.index', compact('activeLembur', 'riwayatLembur', 'canLembur', 'jamPulangToday'));
+        return view('lembur.index', compact(
+            'activeLembur',
+            'riwayatLembur',
+            'canLembur',
+            'jamPulangToday',
+            'totalLemburBulanIni',
+            'menungguApproval',
+            'lemburDisetujui'
+        ));
     }
 
     public function store(Request $request)

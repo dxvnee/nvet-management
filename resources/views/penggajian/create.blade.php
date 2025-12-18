@@ -148,7 +148,7 @@
                             <input type="number" x-model="upahLemburPerMenit"
                                 class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
                         </div>
-                        <p class="mt-1 text-xs text-gray-500">Default: 1.5x upah per menit</p>
+
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Total Upah Lembur</label>
@@ -769,7 +769,7 @@
                 totalMenitTelat: {{ $totalMenitTelat }},
                 potonganPerMenit: {{ $potonganPerMenit }},
                 totalMenitLembur: {{ $totalMenitLembur ?? 0 }},
-                upahLemburPerMenit: {{ floor($potonganPerMenit * 1.5) }},
+                upahLemburPerMenit: {{ floor($potonganPerMenit) }},
                 lainLainItems: [],
 
                 // Dokter

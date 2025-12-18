@@ -144,7 +144,7 @@
                     <div class="mt-2 flex items-center gap-2">
                         <span
                             class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold
-                                            {{ $sudahHadir->shift_number === 1 ? 'bg-blue-500 text-white' : 'bg-orange-500 text-white' }}">
+                                                {{ $sudahHadir->shift_number === 1 ? 'bg-blue-500 text-white' : 'bg-orange-500 text-white' }}">
                             Anda Shift {{ $sudahHadir->shift_number }}
                         </span>
                         @php
@@ -325,6 +325,8 @@
                     <input type="hidden" name="longitude" id="camera-lng">
                     <input type="hidden" name="foto" id="camera-foto">
                     <input type="hidden" name="keterangan" id="camera-keterangan">
+                    <input type="hidden" name="is_lembur" id="camera-is-lembur" value="0">
+                    <input type="hidden" name="lembur_keterangan" id="camera-lembur-keterangan">
                 </form>
 
                 <!-- Submit Button -->
@@ -345,6 +347,56 @@
                         class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                         placeholder="Masukkan alasan..."></textarea>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lembur Confirmation Modal -->
+    <div id="lembur-modal"
+        class="fixed inset-0 bg-black bg-opacity-75 z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all">
+            <div class="p-6">
+                <div class="flex items-center justify-center mb-4">
+                    <div class="p-4 bg-orange-100 rounded-full">
+                        <svg class="h-12 w-12 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 text-center mb-2">Konfirmasi Lembur</h3>
+                <p class="text-gray-600 text-center mb-4">
+                    Anda pulang <span id="lembur-menit" class="font-bold text-orange-600">0</span> menit setelah jam
+                    kerja berakhir.
+                </p>
+                <p class="text-gray-600 text-center mb-6">
+                    Apakah ini termasuk <span class="font-bold text-orange-600">lembur</span>?
+                </p>
+
+                <!-- Keterangan Lembur -->
+                <div id="lembur-keterangan-wrapper" class="mb-6 hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Keterangan Lembur</label>
+                    <textarea id="lembur-keterangan-input" rows="2"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                        placeholder="Masukkan keterangan lembur (opsional)..."></textarea>
+                </div>
+
+                <div class="flex gap-3">
+                    <button type="button" onclick="confirmLembur(false)"
+                        class="flex-1 py-3 px-6 rounded-xl font-bold text-gray-700 bg-gray-200 hover:bg-gray-300 transition-all">
+                        Bukan Lembur
+                    </button>
+                    <button type="button" onclick="showLemburKeterangan()"
+                        class="flex-1 py-3 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg">
+                        Ya, Lembur
+                    </button>
+                </div>
+
+                <!-- Submit Lembur Button (hidden initially) -->
+                <button type="button" id="btn-submit-lembur" onclick="confirmLembur(true)"
+                    class="hidden w-full mt-3 py-3 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all shadow-lg">
+                    Kirim dengan Lembur
+                </button>
             </div>
         </div>
     </div>
@@ -592,6 +644,73 @@
                 document.getElementById('camera-keterangan').value = keterangan;
             }
 
+            // Check for lembur if pulang
+            if (currentTipe === 'pulang') {
+                const lemburMenit = checkLemburEligibility();
+                if (lemburMenit > 0) {
+                    // Show lembur confirmation modal
+                    document.getElementById('lembur-menit').textContent = lemburMenit;
+                    document.getElementById('lembur-modal').classList.remove('hidden');
+                    return;
+                }
+            }
+
+            // Stop camera before submit
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+            }
+
+            // Submit form
+            document.getElementById('camera-form').submit();
+        }
+
+        // Check if eligible for lembur (pulang 30+ minutes after scheduled time)
+        function checkLemburEligibility() {
+            @if($sudahHadir && !$sudahIzin && !$sudahPulang)
+                @php
+                    $user = auth()->user();
+                    if ($user->is_shift && $sudahHadir && $sudahHadir->shift_number) {
+                        $jamPulangSetting = $sudahHadir->shift_number === 1
+                            ? \Carbon\Carbon::parse($user->shift1_jam_keluar)
+                            : \Carbon\Carbon::parse($user->shift2_jam_keluar);
+                    } else {
+                        $jamPulangSetting = $user->jam_keluar
+                            ? \Carbon\Carbon::parse($user->jam_keluar)
+                            : \Carbon\Carbon::createFromTime(20, 0);
+                    }
+                @endphp
+                const jamPulang = new Date();
+                    jamPulang.setHours({{ $jamPulangSetting->hour }}, {{ $jamPulangSetting->minute }}, 0);
+                const now = new Date();
+                const diffMs = now - jamPulang;
+                    const diffMins = Math.floor(diffMs / 60000);
+                // Return minutes if over 30 minutes, otherwise 0
+                    return diffMins >= 30 ? diffMins : 0;
+            @else
+                return 0;
+            @endif
+        }
+
+        // Show keterangan input for lembur
+        function showLemburKeterangan() {
+            document.getElementById('lembur-keterangan-wrapper').classList.remove('hidden');
+            document.getElementById('btn-submit-lembur').classList.remove('hidden');
+        }
+
+        // Confirm lembur choice
+        function confirmLembur(isLembur) {
+            if (isLembur) {
+                document.getElementById('camera-is-lembur').value = '1';
+                document.getElementById('camera-lembur-keterangan').value =
+                    document.getElementById('lembur-keterangan-input').value;
+            } else {
+                document.getElementById('camera-is-lembur').value = '0';
+                document.getElementById('camera-lembur-keterangan').value = '';
+            }
+
+            // Hide lembur modal
+            document.getElementById('lembur-modal').classList.add('hidden');
+
             // Stop camera before submit
             if (cameraStream) {
                 cameraStream.getTracks().forEach(track => track.stop());
@@ -602,11 +721,11 @@
         }
 
         // Update working hours every minute
-        @if($sudahHadir && !$sudahIzin && !$sudahPulang)
-            let checkInTime = '{{ $sudahHadir->jam_masuk->format("H:i:s") }}';
-            setInterval(updateWorkingHours, 60000); // Update every minute
+       @if($sudahHadir && !$sudahIzin && !$sudahPulang)
+        let checkInTime = '{{ $sudahHadir->jam_masuk->format("H:i:s") }}';
+        setInterval(updateWorkingHours, 60000); // Update every minute
             updateWorkingHours(); // Initial update
-        @endif
+    @endif
 
         function updateWorkingHours() {
             if (typeof checkInTime === 'undefined') return;

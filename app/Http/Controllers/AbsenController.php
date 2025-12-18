@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Absen;
+use App\Models\Lembur;
 use App\Models\User;
 use App\Services\PhotoService;
 use Illuminate\Http\Request;
@@ -289,9 +290,35 @@ class AbsenController extends Controller
                 'menit_kerja' => $menitKerja,
             ]);
 
+            // Check if this is marked as lembur
+            $lemburMessage = '';
+            if ($request->is_lembur == '1') {
+                // Calculate lembur duration (from jam_keluar setting until now)
+                $menitLembur = $jamPulangSetting->diffInMinutes($now);
+
+                if ($menitLembur > 0) {
+                    // Create lembur record
+                    Lembur::create([
+                        'user_id' => $user->id,
+                        'tanggal' => $today,
+                        'jam_mulai' => $jamPulangSetting,
+                        'foto_mulai' => $fotoPath, // Use the same photo as pulang
+                        'jam_selesai' => $now,
+                        'foto_selesai' => $fotoPath,
+                        'durasi_menit' => $menitLembur,
+                        'keterangan' => $request->lembur_keterangan ?? 'Lembur otomatis dari absen pulang',
+                        'status' => 'pending', // Admin can approve later
+                    ]);
+
+                    $jam = floor($menitLembur / 60);
+                    $menit = $menitLembur % 60;
+                    $lemburMessage = ' + Lembur ' . ($jam > 0 ? $jam . ' jam ' : '') . $menit . ' menit (menunggu approval)';
+                }
+            }
+
             return back()->with(
                 'success',
-                'Absen pulang berhasil dicatat pukul ' . $now->format('H:i')
+                'Absen pulang berhasil dicatat pukul ' . $now->format('H:i') . $lemburMessage
             );
         }
 
@@ -498,50 +525,101 @@ class AbsenController extends Controller
     public function update(Request $request, Absen $absen)
     {
         $request->validate([
-            'jam_masuk' => 'nullable|date_format:H:i',
-            'jam_pulang' => 'nullable|date_format:H:i',
-            'izin' => 'nullable|boolean',
+            'jam_masuk' => 'nullable|string',
+            'jam_pulang' => 'nullable|string',
+            'izin' => 'nullable',
             'izin_keterangan' => 'nullable|string|max:255',
+            'telat' => 'nullable',
+            'menit_telat' => 'nullable|integer|min:0',
+            'status' => 'nullable|string|in:tepat_waktu,telat',
             'lat_masuk' => 'nullable|numeric',
             'lng_masuk' => 'nullable|numeric',
             'lat_pulang' => 'nullable|numeric',
             'lng_pulang' => 'nullable|numeric',
         ]);
 
-        $data = $request->only([
-            'jam_masuk',
-            'jam_pulang',
-            'izin',
-            'izin_keterangan',
-            'lat_masuk',
-            'lng_masuk',
-            'lat_pulang',
-            'lng_pulang'
-        ]);
+        $data = [];
+        $tanggal = $absen->tanggal->format('Y-m-d');
 
-        // Recalculate status and minutes if times changed
-        if ($request->jam_masuk || $request->jam_pulang) {
-            $jamMasuk = $request->jam_masuk ? Carbon::createFromFormat('H:i', $request->jam_masuk)->setDateFrom($absen->tanggal) : null;
-            $jamPulang = $request->jam_pulang ? Carbon::createFromFormat('H:i', $request->jam_pulang)->setDateFrom($absen->tanggal) : null;
-
-            if ($jamMasuk && $jamPulang) {
-                $menitKerja = $jamMasuk->diffInMinutes($jamPulang, false);
-                $data['menit_kerja'] = $menitKerja;
-
-                // Determine status
-                $jamMasukExpected = $absen->user->jam_masuk ? Carbon::createFromFormat('H:i', $absen->user->jam_masuk)->setDateFrom($absen->tanggal) : null;
-                if ($jamMasukExpected) {
-                    $telat = $jamMasuk->gt($jamMasukExpected);
-                    $data['telat'] = $telat;
-                    $data['menit_telat'] = $telat ? $jamMasuk->diffInMinutes($jamMasukExpected) : 0;
-                    $data['status'] = $telat ? 'telat' : 'tepat_waktu';
-                }
+        // Parse jam masuk safely
+        if ($request->filled('jam_masuk')) {
+            try {
+                $jamMasuk = Carbon::parse($request->jam_masuk)->setDateFrom($absen->tanggal);
+                $data['jam_masuk'] = $jamMasuk;
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Format jam masuk tidak valid');
             }
+        } elseif ($request->has('jam_masuk') && $request->jam_masuk === null) {
+            $data['jam_masuk'] = null;
+        }
+
+        // Parse jam pulang safely
+        if ($request->filled('jam_pulang')) {
+            try {
+                $jamPulang = Carbon::parse($request->jam_pulang)->setDateFrom($absen->tanggal);
+                $data['jam_pulang'] = $jamPulang;
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Format jam pulang tidak valid');
+            }
+        } elseif ($request->has('jam_pulang') && $request->jam_pulang === null) {
+            $data['jam_pulang'] = null;
+        }
+
+        // Handle izin status
+        $data['izin'] = $request->has('izin') ? (bool) $request->izin : false;
+        $data['izin_keterangan'] = $request->izin_keterangan;
+
+        // Handle telat status (manual override)
+        if ($request->has('telat')) {
+            $data['telat'] = (bool) $request->telat;
+        }
+
+        // Handle menit telat
+        if ($request->has('menit_telat')) {
+            $data['menit_telat'] = (int) $request->menit_telat;
+        }
+
+        // Handle status
+        if ($request->filled('status')) {
+            $data['status'] = $request->status;
+        }
+
+        // Handle location data
+        if ($request->has('lat_masuk')) {
+            $data['lat_masuk'] = $request->lat_masuk;
+        }
+        if ($request->has('lng_masuk')) {
+            $data['lng_masuk'] = $request->lng_masuk;
+        }
+        if ($request->has('lat_pulang')) {
+            $data['lat_pulang'] = $request->lat_pulang;
+        }
+        if ($request->has('lng_pulang')) {
+            $data['lng_pulang'] = $request->lng_pulang;
+        }
+
+        // Recalculate menit_kerja if both times exist
+        $jamMasukFinal = isset($data['jam_masuk']) ? $data['jam_masuk'] : $absen->jam_masuk;
+        $jamPulangFinal = isset($data['jam_pulang']) ? $data['jam_pulang'] : $absen->jam_pulang;
+
+        if ($jamMasukFinal && $jamPulangFinal) {
+            $data['menit_kerja'] = $jamMasukFinal->diffInMinutes($jamPulangFinal, false);
         }
 
         $absen->update($data);
 
-        return redirect()->back()->with('success', 'Absensi berhasil diperbarui');
+        return redirect()->route('absen.detailHari', $tanggal)->with('success', 'Absensi berhasil diperbarui');
+    }
+
+    public function destroy(Absen $absen)
+    {
+        // Store the date for redirect
+        $tanggal = $absen->tanggal->format('Y-m-d');
+
+        // Delete the absensi record
+        $absen->delete();
+
+        return redirect()->route('absen.detailHari', $tanggal)->with('success', 'Absensi berhasil dihapus');
     }
 
     /**

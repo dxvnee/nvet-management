@@ -163,7 +163,7 @@
                                         @if($absen->izin)
                                             <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">Izin</span>
                                         @elseif($absen->jam_masuk)
-                                            @if($absen->status === 'tepat_waktu')
+                                            @if($absen->telat == 0)
                                                 <span class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">Tepat Waktu</span>
                                             @else
                                                 <span class="px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-700">Terlambat</span>
@@ -231,6 +231,21 @@
                                                         </path>
                                                     </svg>
                                                 </a>
+                                                <form method="POST" action="{{ route('absen.destroy', $absen) }}"
+                                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus absensi {{ $absen->user->name }}? Tindakan ini tidak dapat dibatalkan.')"
+                                                    class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-colors"
+                                                        title="Hapus">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                            </path>
+                                                        </svg>
+                                                    </button>
+                                                </form>
                                             @endif
                                         </div>
                                     </td>

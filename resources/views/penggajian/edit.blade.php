@@ -525,6 +525,56 @@
                 @endif
             </div>
 
+            <div class="bg-white rounded-2xl shadow-xl p-8 animate-slide-up-delay-2">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-3 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl shadow-lg">
+                        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-800">Lembur</h2>
+                        <p class="text-gray-500 text-sm">Perhitungan upah lembur</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Total Durasi Lembur</label>
+                        <div class="relative">
+                            <input type="number" name="total_menit_lembur" x-model="totalMenitLembur"
+                                value="{{ old('total_menit_lembur', $penggajian->total_menit_lembur ?? 0) }}"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                                min="0">
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">menit</span>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">
+                            <span x-text="Math.floor(totalMenitLembur / 60)"></span> jam <span
+                                x-text="totalMenitLembur % 60"></span> menit
+                        </p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Upah Lembur Per Menit</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">Rp</span>
+                            <input type="number" name="upah_lembur_per_menit" x-model="upahLemburPerMenit"
+                                value="{{ old('upah_lembur_per_menit', $penggajian->upah_lembur_per_menit ?? 0) }}"
+                                class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                                min="0" step="1">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Total Upah Lembur</label>
+                        <div class="bg-yellow-50 rounded-xl px-4 py-3 border border-yellow-200">
+                            <p class="text-yellow-700 font-bold text-lg">+ Rp <span
+                                    x-text="formatNumber(totalMenitLembur * upahLemburPerMenit)"></span></p>
+                        </div>
+                        <input type="hidden" name="total_upah_lembur" :value="totalMenitLembur * upahLemburPerMenit">
+                    </div>
+                </div>
+            </div>
+
             <!-- Lain-lain Section -->
             <div class="bg-white rounded-2xl shadow-xl p-8 animate-slide-up-delay-2">
                 <div class="flex items-center justify-between mb-6">
@@ -649,6 +699,8 @@
                 gajiPokok: {{ $penggajian->gaji_pokok }},
                 totalMenitTelat: {{ $totalMenitTelat }},
                 potonganPerMenit: {{ $potonganPerMenit }},
+                totalMenitLembur: {{ $penggajian->total_menit_lembur ?? 0 }},
+                upahLemburPerMenit: {{ $penggajian->upah_lembur_per_menit ?? 0 }},
                 lainLainItems: @json($penggajian->lain_lain_items ?? []),
 
                 dokter: {
@@ -740,8 +792,9 @@
                     const gaji = parseFloat(this.gajiPokok) || 0;
                     const potongan = (parseInt(this.totalMenitTelat) || 0) * (parseFloat(this.potonganPerMenit) || 0);
                     const insentif = this.getInsentif();
+                    const lembur = (parseInt(this.totalMenitLembur) || 0) * (parseFloat(this.upahLemburPerMenit) || 0);
                     const lainLain = this.calculateLainLainTotal();
-                    return gaji - potongan + insentif + lainLain;
+                    return gaji - potongan + insentif + lembur + lainLain;
                 }
             }
         }

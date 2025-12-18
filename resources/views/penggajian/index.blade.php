@@ -186,6 +186,7 @@
                                         @endif
                                     </a>
                                 </th>
+                                <th class="text-left py-3 px-4 font-semibold text-gray-600">Lembur</th>
                                 <th class="text-left py-3 px-4 font-semibold text-gray-600">
                                     <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'total_gaji', 'sort_direction' => (request('sort_by') === 'total_gaji' && request('sort_direction') === 'asc') ? 'desc' : 'asc']) }}"
                                        class="flex items-center space-x-1 hover:text-primary transition-colors">
@@ -241,6 +242,14 @@
                                     </td>
                                     <td class="py-3 px-4 text-gray-700">
                                         <span class="text-green-600">+ Rp {{ number_format($gaji->total_insentif, 0, ',', '.') }}</span>
+                                    </td>
+                                    <td class="py-3 px-4 text-gray-700">
+                                        <span class="text-blue-600">+ Rp {{ number_format($gaji->total_upah_lembur ?? 0, 0, ',', '.') }}</span>
+                                        @if($gaji->total_menit_lembur ?? 0 > 0)
+                                            <div class="text-xs text-gray-500">
+                                                {{ floor(($gaji->total_menit_lembur ?? 0) / 60) }}j {{ ($gaji->total_menit_lembur ?? 0) % 60 }}m
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="py-3 px-4 text-gray-700">
                                         <span class="font-bold text-lg">Rp {{ number_format($gaji->total_gaji, 0, ',', '.') }}</span>

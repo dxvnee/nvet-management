@@ -113,6 +113,20 @@ class PenggajianController extends Controller
 
         $user = User::findOrFail($request->user_id);
 
+        // Get approved overtime for the period
+        $startDate = Carbon::parse($request->periode . '-01')->startOfMonth();
+        $endDate = Carbon::parse($request->periode . '-01')->endOfMonth();
+
+        $lembur = Lembur::where('user_id', $request->user_id)
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->where('status', 'approved')
+            ->get();
+
+        $totalMenitLembur = $lembur->sum('durasi_menit');
+
+        $upahLemburPerMenit = round($request->potongan_per_menit);
+        $totalUpahLembur = $totalMenitLembur * $upahLemburPerMenit;
+
         // Calculate totals
         $gajiPokok = $request->gaji_pokok;
         $totalPotonganTelat = $request->total_menit_telat * $request->potongan_per_menit;
@@ -122,7 +136,7 @@ class PenggajianController extends Controller
         $lainLainItems = $request->lain_lain_items ?? [];
         $lainLain = $this->calculateLainLain($lainLainItems);
 
-        $totalGaji = $gajiPokok - $totalPotonganTelat + $totalInsentif + $lainLain;
+        $totalGaji = $gajiPokok - $totalPotonganTelat + $totalInsentif + $lainLain + $totalUpahLembur;
 
         Penggajian::create([
             'user_id' => $request->user_id,
@@ -131,6 +145,9 @@ class PenggajianController extends Controller
             'total_menit_telat' => $request->total_menit_telat,
             'potongan_per_menit' => $request->potongan_per_menit,
             'total_potongan_telat' => $totalPotonganTelat,
+            'total_menit_lembur' => $totalMenitLembur,
+            'upah_lembur_per_menit' => $upahLemburPerMenit,
+            'total_upah_lembur' => $totalUpahLembur,
             'insentif_detail' => $request->insentif_detail,
             'total_insentif' => $totalInsentif,
             'lain_lain_items' => $lainLainItems,
@@ -160,11 +177,16 @@ class PenggajianController extends Controller
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->get();
 
+        // Get current overtime data from saved payroll (not recalculated)
+        $totalMenitLembur = $penggajian->total_menit_lembur ?? 0;
+        $upahLemburPerMenit = $penggajian->upah_lembur_per_menit ?? round(($user->gaji_pokok / (($user->jam_kerja ?? 8) * 26)) / 60 * 1.5);
+        $totalUpahLembur = $penggajian->total_upah_lembur ?? 0;
+
         $totalMenitTelat = $absensi->sum('menit_telat');
         $jamKerja = $user->jam_kerja ?? 8;
         $potonganPerMenit = round(($user->gaji_pokok / ($jamKerja * 26)) / 60);
 
-        return view('penggajian.edit', compact('penggajian', 'user', 'periode', 'absensi', 'totalMenitTelat', 'potonganPerMenit'));
+        return view('penggajian.edit', compact('penggajian', 'user', 'periode', 'absensi', 'totalMenitTelat', 'potonganPerMenit', 'totalMenitLembur', 'upahLemburPerMenit', 'totalUpahLembur'));
     }
 
     /**
@@ -176,6 +198,9 @@ class PenggajianController extends Controller
             'gaji_pokok' => 'required|numeric|min:0',
             'total_menit_telat' => 'required|integer|min:0',
             'potongan_per_menit' => 'required|integer|min:0',
+            'total_menit_lembur' => 'nullable|integer|min:0',
+            'upah_lembur_per_menit' => 'nullable|numeric|min:0',
+            'total_upah_lembur' => 'nullable|numeric|min:0',
             'insentif_detail' => 'nullable|array',
             'lain_lain_items' => 'nullable|array',
             'catatan' => 'nullable|string',
@@ -183,6 +208,11 @@ class PenggajianController extends Controller
         ]);
 
         $user = $penggajian->user;
+
+        // Use overtime values from form input (previously saved values)
+        $totalMenitLembur = $request->total_menit_lembur ?? 0;
+        $upahLemburPerMenit = $request->upah_lembur_per_menit ?? round($request->potongan_per_menit * 1.5);
+        $totalUpahLembur = $request->total_upah_lembur ?? ($totalMenitLembur * $upahLemburPerMenit);
 
         // Calculate totals
         $gajiPokok = $request->gaji_pokok;
@@ -193,13 +223,16 @@ class PenggajianController extends Controller
         $lainLainItems = $request->lain_lain_items ?? [];
         $lainLain = $this->calculateLainLain($lainLainItems);
 
-        $totalGaji = $gajiPokok - $totalPotonganTelat + $totalInsentif + $lainLain;
+        $totalGaji = $gajiPokok - $totalPotonganTelat + $totalInsentif + $lainLain + $totalUpahLembur;
 
         $penggajian->update([
             'gaji_pokok' => $gajiPokok,
             'total_menit_telat' => $request->total_menit_telat,
             'potongan_per_menit' => $request->potongan_per_menit,
             'total_potongan_telat' => $totalPotonganTelat,
+            'total_menit_lembur' => $totalMenitLembur,
+            'upah_lembur_per_menit' => $upahLemburPerMenit,
+            'total_upah_lembur' => $totalUpahLembur,
             'insentif_detail' => $request->insentif_detail,
             'total_insentif' => $totalInsentif,
             'lain_lain_items' => $lainLainItems,

@@ -22,6 +22,7 @@
                                 <th class="text-left py-3 px-4 font-semibold text-gray-600">Waktu</th>
                                 <th class="text-left py-3 px-4 font-semibold text-gray-600">Durasi</th>
                                 <th class="text-left py-3 px-4 font-semibold text-gray-600">Keterangan</th>
+                                <th class="text-left py-3 px-4 font-semibold text-gray-600">Foto</th>
                                 <th class="text-left py-3 px-4 font-semibold text-gray-600">Status</th>
                                 <th class="text-left py-3 px-4 font-semibold text-gray-600">Aksi</th>
                             </tr>
@@ -49,6 +50,19 @@
                                     </td>
                                     <td class="py-3 px-4 text-gray-700 max-w-xs truncate">
                                         {{ $lembur->keterangan ?? '-' }}
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        @if($lembur->foto_mulai || $lembur->foto_selesai)
+                                            <button onclick="openPhotoModal('{{ $lembur->id }}', '{{ $lembur->foto_mulai }}', '{{ $lembur->foto_selesai }}', '{{ $lembur->user->name }}', '{{ $lembur->tanggal->format('d M Y') }}')"
+                                                class="p-2 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg transition-colors"
+                                                title="Lihat Foto">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                </svg>
+                                            </button>
+                                        @else
+                                            <span class="text-xs text-gray-400">-</span>
+                                        @endif
                                     </td>
                                     <td class="py-3 px-4">
                                         @if($lembur->status === 'approved')
@@ -172,10 +186,128 @@
         </div>
     </div>
 
+    <!-- Photo Modal -->
+    <div id="photo-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden opacity-0 transition-all duration-300 ease-out p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl transform scale-95 transition-all duration-300 ease-out">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800">Foto Lembur</h3>
+                        <p class="text-gray-600 text-sm" id="photo-subtitle"></p>
+                    </div>
+                    <button onclick="closePhotoModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="text-center">
+                    <!-- Foto Lembur -->
+                    <div class="space-y-3">
+                        <h4 class="font-semibold text-gray-700 flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            Foto Lembur
+                        </h4>
+                        <div class="relative bg-gray-100 rounded-xl overflow-hidden max-w-md mx-auto">
+                            <img id="photo-lembur" class="w-full h-80 object-cover opacity-0 transform scale-95 transition-all duration-500 ease-out delay-150" alt="Foto Lembur">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <script>
         function openRejectModal(url) {
             document.getElementById('rejectForm').action = url;
             document.getElementById('rejectModal').classList.remove('hidden');
         }
+
+        function openPhotoModal(lemburId, fotoMulai, fotoSelesai, namaPegawai, tanggal) {
+            const modal = document.getElementById('photo-modal');
+            const modalImage = document.getElementById('photo-lembur');
+
+            document.getElementById('photo-subtitle').textContent = namaPegawai + ' - ' + tanggal;
+
+            // Prioritize foto_selesai, fallback to foto_mulai
+            const fotoToShow = fotoSelesai || fotoMulai;
+
+            if (fotoToShow) {
+                modalImage.src = '/storage/' + fotoToShow;
+                modalImage.style.display = 'block';
+            } else {
+                modalImage.style.display = 'none';
+            }
+
+            // Show modal with initial state
+            modal.classList.remove('hidden');
+
+            // Force reflow to ensure initial state is applied
+            modal.offsetHeight;
+
+            // Start modal animation
+            modal.classList.add('opacity-100');
+            modal.querySelector('.bg-white').classList.add('scale-100');
+
+            // Handle image animation after it's loaded
+            modalImage.onload = function() {
+                setTimeout(() => {
+                    modalImage.classList.add('opacity-100', 'scale-100');
+                }, 100);
+            };
+
+            // Fallback if image is already cached
+            if (modalImage.complete) {
+                setTimeout(() => {
+                    modalImage.classList.add('opacity-100', 'scale-100');
+                }, 100);
+            }
+        }
+
+        function closePhotoModal() {
+            const modal = document.getElementById('photo-modal');
+            const modalImage = document.getElementById('photo-lembur');
+
+            // Start closing animations
+            modal.classList.remove('opacity-100');
+            modal.querySelector('.bg-white').classList.remove('scale-100');
+            modalImage.classList.remove('opacity-100', 'scale-100');
+
+            // Hide modal after animation completes
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                // Clear image src to free memory
+                modalImage.src = '';
+            }, 300);
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('rejectModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('photo-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePhotoModal();
+            }
+        });
+
+        // Close modals with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (!document.getElementById('rejectModal').classList.contains('hidden')) {
+                    document.getElementById('rejectModal').classList.add('hidden');
+                }
+                if (!document.getElementById('photo-modal').classList.contains('hidden')) {
+                    closePhotoModal();
+                }
+            }
+        });
     </script>
 </x-app-layout>
