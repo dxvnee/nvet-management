@@ -635,46 +635,93 @@
                 @endif
             </div>
 
-            <!-- Reimburse & Lain-lain -->
+            <!-- Lain-lain Section -->
             <div class="bg-white rounded-2xl shadow-xl p-8 animate-slide-up-delay-2">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="p-3 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg">
-                        <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="p-3 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg">
+                            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                                </path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-800">Lain-lain</h2>
+                            <p class="text-gray-500 text-sm">Komponen tambahan penggajian (+/-)</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="lainLainItems.push({ nama: '', nilai: 0 })"
+                        class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
+                            </path>
+                        </svg>
+                        Tambah Item
+                    </button>
+                </div>
+
+                <!-- Dynamic Lain-lain Items -->
+                <template x-if="lainLainItems.length > 0">
+                    <div class="space-y-3">
+                        <template x-for="(item, index) in lainLainItems" :key="index">
+                            <div
+                                class="flex flex-col md:flex-row gap-3 p-4 bg-orange-50 rounded-xl border border-orange-200">
+                                <div class="flex-1">
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Nama/Keterangan</label>
+                                    <input type="text" x-model="item.nama"
+                                        :name="'lain_lain_items[' + index + '][nama]'"
+                                        placeholder="Contoh: Reimburse Transport, Bonus, Potongan Kasbon..."
+                                        class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 text-sm">
+                                </div>
+                                <div class="w-full md:w-48">
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Nilai (+/-)</label>
+                                    <div class="relative">
+                                        <span
+                                            class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">Rp</span>
+                                        <input type="number" x-model="item.nilai"
+                                            :name="'lain_lain_items[' + index + '][nilai]'"
+                                            class="w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 text-sm">
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">Negatif untuk potongan</p>
+                                </div>
+                                <div class="flex items-end">
+                                    <button type="button" @click="lainLainItems.splice(index, 1)"
+                                        class="px-3 py-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-colors">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                            </path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Total Lain-lain -->
+                        <div class="mt-4 p-4 rounded-xl"
+                            :class="calculateLainLainTotal() >= 0 ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'">
+                            <p :class="calculateLainLainTotal() >= 0 ? 'text-green-700' : 'text-red-700'"
+                                class="font-bold text-lg">
+                                Total Lain-lain: <span
+                                    x-text="(calculateLainLainTotal() >= 0 ? '+ ' : '') + 'Rp ' + formatNumber(calculateLainLainTotal())"></span>
+                            </p>
+                        </div>
+                    </div>
+                </template>
+
+                <template x-if="lainLainItems.length === 0">
+                    <div class="text-center py-8 text-gray-500">
+                        <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
                             </path>
                         </svg>
+                        <p>Belum ada item lain-lain</p>
+                        <p class="text-sm">Klik tombol "Tambah Item" untuk menambahkan</p>
                     </div>
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-800">Reimburse & Lain-lain</h2>
-                        <p class="text-gray-500 text-sm">Komponen tambahan penggajian</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Reimburse</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">Rp</span>
-                            <input type="number" name="reimburse" x-model="reimburse"
-                                class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                                min="0">
-                        </div>
-                        <textarea name="keterangan_reimburse" rows="2" placeholder="Keterangan reimburse..."
-                            class="w-full mt-2 px-4 py-2 rounded-lg border border-gray-300 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20"></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Lain-lain (+/-)</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">Rp</span>
-                            <input type="number" name="lain_lain" x-model="lainLain"
-                                class="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
-                        </div>
-                        <textarea name="keterangan_lain" rows="2" placeholder="Keterangan lain-lain..."
-                            class="w-full mt-2 px-4 py-2 rounded-lg border border-gray-300 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20"></textarea>
-                        <p class="mt-1 text-xs text-gray-500">Gunakan nilai negatif untuk potongan</p>
-                    </div>
-                </div>
+                </template>
 
                 <div class="mt-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Catatan</label>
@@ -723,8 +770,7 @@
                 potonganPerMenit: {{ $potonganPerMenit }},
                 totalMenitLembur: {{ $totalMenitLembur ?? 0 }},
                 upahLemburPerMenit: {{ floor($potonganPerMenit * 1.5) }},
-                reimburse: 0,
-                lainLain: 0,
+                lainLainItems: [],
 
                 // Dokter
                 dokter: {
@@ -761,9 +807,15 @@
                     return new Intl.NumberFormat('id-ID').format(num || 0);
                 },
 
-                calculateLainLainTotal(items) {
+                calculateInsentifLainLainTotal(items) {
                     return items.reduce((total, item) => {
                         return total + ((parseInt(item.qty) || 0) * (parseFloat(item.harga) || 0));
+                    }, 0);
+                },
+
+                calculateLainLainTotal() {
+                    return this.lainLainItems.reduce((total, item) => {
+                        return total + (parseFloat(item.nilai) || 0);
                     }, 0);
                 },
 
@@ -772,7 +824,7 @@
                     const pengurangan = parseFloat(this.dokter.pengurangan) || 0;
                     const penambahan = parseFloat(this.dokter.penambahan) || 0;
                     const persenan = (parseFloat(this.dokter.persenan) || 0) / 100;
-                    const lainLain = this.calculateLainLainTotal(this.dokter.lainLainItems);
+                    const lainLain = this.calculateInsentifLainLainTotal(this.dokter.lainLainItems);
                     return (transaksi - pengurangan + penambahan) * persenan + lainLain;
                 },
 
@@ -781,20 +833,20 @@
                     const rawatInap = (parseInt(this.paramedis.rawatInapQty) || 0) * (parseFloat(this.paramedis.rawatInapHarga) || 0);
                     const visit = (parseInt(this.paramedis.visitQty) || 0) * (parseFloat(this.paramedis.visitHarga) || 0);
                     const grooming = (parseInt(this.paramedis.groomingQty) || 0) * (parseFloat(this.paramedis.groomingHarga) || 0);
-                    const lainLain = this.calculateLainLainTotal(this.paramedis.lainLainItems);
+                    const lainLain = this.calculateInsentifLainLainTotal(this.paramedis.lainLainItems);
                     return antarJemput + rawatInap + visit + grooming + lainLain;
                 },
 
                 calculateFOInsentif() {
                     const review = (parseInt(this.fo.reviewQty) || 0) * (parseFloat(this.fo.reviewHarga) || 0);
                     const appointment = (parseInt(this.fo.appointmentQty) || 0) * (parseFloat(this.fo.appointmentHarga) || 0);
-                    const lainLain = this.calculateLainLainTotal(this.fo.lainLainItems);
+                    const lainLain = this.calculateInsentifLainLainTotal(this.fo.lainLainItems);
                     return review + appointment + lainLain;
                 },
 
                 calculateTechInsentif() {
                     const antarKonten = (parseInt(this.tech.antarKontenQty) || 0) * (parseFloat(this.tech.antarKontenHarga) || 0);
-                    const lainLain = this.calculateLainLainTotal(this.tech.lainLainItems);
+                    const lainLain = this.calculateInsentifLainLainTotal(this.tech.lainLainItems);
                     return antarKonten + lainLain;
                 },
 
@@ -814,9 +866,8 @@
                     const potongan = (parseInt(this.totalMenitTelat) || 0) * (parseFloat(this.potonganPerMenit) || 0);
                     const lembur = (parseInt(this.totalMenitLembur) || 0) * (parseFloat(this.upahLemburPerMenit) || 0);
                     const insentif = this.getInsentif();
-                    const reimburse = parseFloat(this.reimburse) || 0;
-                    const lainLain = parseFloat(this.lainLain) || 0;
-                    return gaji - potongan + lembur + insentif - reimburse + lainLain;
+                    const lainLain = this.calculateLainLainTotal();
+                    return gaji - potongan + lembur + insentif + lainLain;
                 }
             }
         }

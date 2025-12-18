@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Slip Gaji - {{ $penggajian->user->name }} - {{ \Carbon\Carbon::parse($penggajian->periode)->format('F Y') }}</title>
     <style>
+        :root {
+            --primary: #855E41;
+            --primary-2: #6C4A34;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --bg: #f6f7fb;
+            --card: #ffffff;
+            --positive: #16a34a;
+            --negative: #dc2626;
+            --warning: #f59e0b;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,19 +25,35 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f5f5;
-            color: #333;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            background: var(--bg);
+            color: var(--text);
             font-size: 12px;
             line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            font-variant-numeric: tabular-nums;
         }
 
         .container {
             max-width: 800px;
             margin: 20px auto;
-            background: white;
+            background: var(--card);
             padding: 40px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            border: 1px solid rgba(17, 24, 39, 0.06);
+            box-shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-2));
         }
 
         @media print {
@@ -35,6 +64,11 @@
                 margin: 0;
                 padding: 20px;
                 box-shadow: none;
+                border: none;
+                border-radius: 0;
+            }
+            .container::before {
+                display: none;
             }
             .no-print {
                 display: none !important;
@@ -42,25 +76,45 @@
             @page {
                 margin: 10mm;
             }
+
+            /* Keep print output clean and readable even without background printing */
+            .employee-section,
+            .insentif-detail,
+            .note-section {
+                background: #fff !important;
+            }
+            .employee-section {
+                border: 1px solid var(--border);
+            }
+            .total-section {
+                background: #fff !important;
+                color: var(--text) !important;
+                border: 2px solid var(--primary);
+            }
+            .total-section .breakdown {
+                opacity: 1;
+                color: var(--muted);
+            }
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 3px solid #e5e7eb;
+            border-bottom: 2px solid var(--border);
             padding-bottom: 20px;
             margin-bottom: 30px;
         }
 
         .company-info h1 {
-            font-size: 28px;
-            color: #774900;
+            font-size: 26px;
+            color: var(--primary);
             font-weight: 700;
+            letter-spacing: -0.02em;
         }
 
         .company-info p {
-            color: #666;
+            color: var(--muted);
             font-size: 11px;
         }
 
@@ -70,19 +124,21 @@
 
         .slip-info h2 {
             font-size: 18px;
-            color: #333;
+            color: var(--text);
             font-weight: 600;
+            letter-spacing: 0.06em;
         }
 
         .slip-info p {
-            color: #666;
+            color: var(--muted);
             font-size: 12px;
         }
 
         .employee-section {
             display: flex;
             gap: 40px;
-            background: linear-gradient(135deg, #f0fdfa, #e0f2fe);
+            background: #f8fafc;
+            border: 1px solid var(--border);
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 30px;
@@ -93,7 +149,7 @@
             height: 80px;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid #0D9488;
+            border: 3px solid rgba(133, 94, 65, 0.25);
         }
 
         .employee-details {
@@ -102,7 +158,7 @@
 
         .employee-details h3 {
             font-size: 18px;
-            color: #0D9488;
+            color: var(--primary);
             margin-bottom: 5px;
         }
 
@@ -117,7 +173,7 @@
 
         .employee-details td:first-child {
             width: 120px;
-            color: #666;
+            color: var(--muted);
         }
 
         .badge {
@@ -126,6 +182,9 @@
             border-radius: 20px;
             font-size: 11px;
             font-weight: 600;
+            border: 1px solid rgba(17, 24, 39, 0.08);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
         }
 
         .badge-dokter { background: #f3e8ff; color: #7c3aed; }
@@ -139,10 +198,10 @@
 
         .salary-section h4 {
             font-size: 14px;
-            color: #0D9488;
+            color: var(--text);
             margin-bottom: 15px;
             padding-bottom: 8px;
-            border-bottom: 2px solid #e5e7eb;
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -151,11 +210,18 @@
         .salary-table {
             width: 100%;
             border-collapse: collapse;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
         }
 
         .salary-table td {
-            padding: 10px 15px;
+            padding: 10px 14px;
             border-bottom: 1px solid #f3f4f6;
+        }
+
+        .salary-table tr:nth-child(even) td {
+            background: #fafafa;
         }
 
         .salary-table tr:last-child td {
@@ -163,7 +229,7 @@
         }
 
         .salary-table .label {
-            color: #555;
+            color: #374151;
         }
 
         .salary-table .value {
@@ -172,21 +238,22 @@
         }
 
         .salary-table .positive {
-            color: #16a34a;
+            color: var(--positive);
         }
 
         .salary-table .negative {
-            color: #dc2626;
+            color: var(--negative);
         }
 
         .salary-table .sub-label {
             padding-left: 30px;
             font-size: 11px;
-            color: #888;
+            color: var(--muted);
         }
 
         .insentif-detail {
             background: #f9fafb;
+            border: 1px solid var(--border);
             border-radius: 8px;
             padding: 15px;
             margin: 10px 0;
@@ -202,7 +269,7 @@
         }
 
         .total-section {
-            background: linear-gradient(135deg, #0D9488, #0891b2);
+            background: linear-gradient(135deg, var(--primary), var(--primary-2));
             color: white;
             padding: 25px;
             border-radius: 12px;
@@ -244,7 +311,7 @@
         }
 
         .signature-line {
-            border-top: 1px solid #333;
+            border-top: 1px solid #111827;
             margin-top: 60px;
             padding-top: 8px;
         }
@@ -253,7 +320,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: #0D9488;
+            background: var(--primary);
             color: white;
             padding: 15px 30px;
             border: none;
@@ -261,14 +328,14 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.4);
+            box-shadow: 0 4px 15px rgba(133, 94, 65, 0.4);
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .print-button:hover {
-            background: #0f766e;
+            background: #553820;
         }
 
         .status-badge {
@@ -320,7 +387,7 @@
         <!-- Header -->
         <div class="header">
             <div class="company-info">
-                <h1>🐾 NVet Clinic</h1>
+                <h1>NVet Clinic</h1>
                 <p>Jl. Contoh No. 123, Kota XYZ</p>
                 <p>Telp: (021) 123-4567 | Email: info@nvet.id</p>
             </div>
@@ -502,41 +569,35 @@
             </table>
         </div>
 
-        <!-- Reimburse & Lain-lain -->
+        <!-- Lain-lain -->
+        @php
+            $lainLainItems = $penggajian->lain_lain_items ?? [];
+        @endphp
+        @if(count($lainLainItems) > 0)
         <div class="salary-section">
             <h4>
                 <span style="color: #f59e0b;">●</span> Lain-lain
             </h4>
             <table class="salary-table">
-                @if($penggajian->reimburse > 0)
+                @foreach($lainLainItems as $item)
+                    @if(isset($item['nama']) && $item['nilai'] != 0)
+                    <tr>
+                        <td class="label">{{ $item['nama'] }}</td>
+                        <td class="value {{ $item['nilai'] >= 0 ? 'positive' : 'negative' }}">
+                            {{ $item['nilai'] >= 0 ? '+ ' : '' }}Rp {{ number_format($item['nilai'], 0, ',', '.') }}
+                        </td>
+                    </tr>
+                    @endif
+                @endforeach
                 <tr>
-                    <td class="label">Reimburse</td>
-                    <td class="value negative">- Rp {{ number_format($penggajian->reimburse, 0, ',', '.') }}</td>
-                </tr>
-                @if($penggajian->keterangan_reimburse)
-                <tr>
-                    <td class="sub-label">{{ $penggajian->keterangan_reimburse }}</td>
-                    <td></td>
-                </tr>
-                @endif
-                @endif
-
-                @if($penggajian->lain_lain != 0)
-                <tr>
-                    <td class="label">Lain-lain</td>
+                    <td class="label"><strong>Total Lain-lain</strong></td>
                     <td class="value {{ $penggajian->lain_lain >= 0 ? 'positive' : 'negative' }}">
-                        {{ $penggajian->lain_lain >= 0 ? '+ ' : '- ' }}Rp {{ number_format(abs($penggajian->lain_lain), 0, ',', '.') }}
+                        <strong>{{ $penggajian->lain_lain >= 0 ? '+ ' : '' }}Rp {{ number_format($penggajian->lain_lain, 0, ',', '.') }}</strong>
                     </td>
                 </tr>
-                @if($penggajian->keterangan_lain)
-                <tr>
-                    <td class="sub-label">{{ $penggajian->keterangan_lain }}</td>
-                    <td></td>
-                </tr>
-                @endif
-                @endif
             </table>
         </div>
+        @endif
 
         <!-- Total -->
         <div class="total-section">
@@ -550,8 +611,7 @@
                         Gaji Pokok (Rp {{ number_format($penggajian->gaji_pokok, 0, ',', '.') }})
                         - Potongan (Rp {{ number_format($penggajian->total_potongan_telat, 0, ',', '.') }})
                         + Insentif (Rp {{ number_format($penggajian->total_insentif, 0, ',', '.') }})
-                        - Reimburse (Rp {{ number_format($penggajian->reimburse, 0, ',', '.') }})
-                        {{ $penggajian->lain_lain >= 0 ? '+' : '-' }} Lain-lain (Rp {{ number_format(abs($penggajian->lain_lain), 0, ',', '.') }})
+                        {{ $penggajian->lain_lain >= 0 ? '+' : '' }} Lain-lain (Rp {{ number_format($penggajian->lain_lain, 0, ',', '.') }})
                     </td>
                 </tr>
             </table>

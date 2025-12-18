@@ -106,10 +106,7 @@ class PenggajianController extends Controller
             'total_menit_telat' => 'required|integer|min:0',
             'potongan_per_menit' => 'required|integer|min:0',
             'insentif_detail' => 'nullable|array',
-            'reimburse' => 'nullable|numeric|min:0',
-            'keterangan_reimburse' => 'nullable|string',
-            'lain_lain' => 'nullable|numeric',
-            'keterangan_lain' => 'nullable|string',
+            'lain_lain_items' => 'nullable|array',
             'catatan' => 'nullable|string',
             'status' => 'required|in:draft,final',
         ]);
@@ -120,10 +117,12 @@ class PenggajianController extends Controller
         $gajiPokok = $request->gaji_pokok;
         $totalPotonganTelat = $request->total_menit_telat * $request->potongan_per_menit;
         $totalInsentif = $this->calculateInsentif($user->jabatan, $request->insentif_detail ?? []);
-        $reimburse = $request->reimburse ?? 0;
-        $lainLain = $request->lain_lain ?? 0;
 
-        $totalGaji = $gajiPokok - $totalPotonganTelat + $totalInsentif - $reimburse + $lainLain;
+        // Calculate lain-lain from items
+        $lainLainItems = $request->lain_lain_items ?? [];
+        $lainLain = $this->calculateLainLain($lainLainItems);
+
+        $totalGaji = $gajiPokok - $totalPotonganTelat + $totalInsentif + $lainLain;
 
         Penggajian::create([
             'user_id' => $request->user_id,
@@ -134,10 +133,8 @@ class PenggajianController extends Controller
             'total_potongan_telat' => $totalPotonganTelat,
             'insentif_detail' => $request->insentif_detail,
             'total_insentif' => $totalInsentif,
-            'reimburse' => $reimburse,
-            'keterangan_reimburse' => $request->keterangan_reimburse,
+            'lain_lain_items' => $lainLainItems,
             'lain_lain' => $lainLain,
-            'keterangan_lain' => $request->keterangan_lain,
             'total_gaji' => $totalGaji,
             'catatan' => $request->catatan,
             'status' => $request->status,
@@ -180,10 +177,7 @@ class PenggajianController extends Controller
             'total_menit_telat' => 'required|integer|min:0',
             'potongan_per_menit' => 'required|integer|min:0',
             'insentif_detail' => 'nullable|array',
-            'reimburse' => 'nullable|numeric|min:0',
-            'keterangan_reimburse' => 'nullable|string',
-            'lain_lain' => 'nullable|numeric',
-            'keterangan_lain' => 'nullable|string',
+            'lain_lain_items' => 'nullable|array',
             'catatan' => 'nullable|string',
             'status' => 'required|in:draft,final',
         ]);
@@ -194,10 +188,12 @@ class PenggajianController extends Controller
         $gajiPokok = $request->gaji_pokok;
         $totalPotonganTelat = $request->total_menit_telat * $request->potongan_per_menit;
         $totalInsentif = $this->calculateInsentif($user->jabatan, $request->insentif_detail ?? []);
-        $reimburse = $request->reimburse ?? 0;
-        $lainLain = $request->lain_lain ?? 0;
 
-        $totalGaji = $gajiPokok - $totalPotonganTelat + $totalInsentif - $reimburse + $lainLain;
+        // Calculate lain-lain from items
+        $lainLainItems = $request->lain_lain_items ?? [];
+        $lainLain = $this->calculateLainLain($lainLainItems);
+
+        $totalGaji = $gajiPokok - $totalPotonganTelat + $totalInsentif + $lainLain;
 
         $penggajian->update([
             'gaji_pokok' => $gajiPokok,
@@ -206,10 +202,8 @@ class PenggajianController extends Controller
             'total_potongan_telat' => $totalPotonganTelat,
             'insentif_detail' => $request->insentif_detail,
             'total_insentif' => $totalInsentif,
-            'reimburse' => $reimburse,
-            'keterangan_reimburse' => $request->keterangan_reimburse,
+            'lain_lain_items' => $lainLainItems,
             'lain_lain' => $lainLain,
-            'keterangan_lain' => $request->keterangan_lain,
             'total_gaji' => $totalGaji,
             'catatan' => $request->catatan,
             'status' => $request->status,
@@ -298,6 +292,19 @@ class PenggajianController extends Controller
                 break;
         }
 
+        return $total;
+    }
+
+    /**
+     * Calculate lain-lain total from items (can be positive or negative).
+     */
+    private function calculateLainLain(array $items): float
+    {
+        $total = 0;
+        foreach ($items as $item) {
+            $nilai = floatval($item['nilai'] ?? 0);
+            $total += $nilai;
+        }
         return $total;
     }
 

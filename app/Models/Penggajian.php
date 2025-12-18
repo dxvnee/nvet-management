@@ -24,6 +24,7 @@ class Penggajian extends Model
         'reimburse',
         'keterangan_reimburse',
         'lain_lain',
+        'lain_lain_items',
         'keterangan_lain',
         'total_gaji',
         'catatan',
@@ -40,6 +41,7 @@ class Penggajian extends Model
             'total_insentif' => 'decimal:2',
             'reimburse' => 'decimal:2',
             'lain_lain' => 'decimal:2',
+            'lain_lain_items' => 'array',
             'total_gaji' => 'decimal:2',
         ];
     }
