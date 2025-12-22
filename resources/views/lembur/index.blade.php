@@ -208,7 +208,7 @@
             <div class="p-4 space-y-4">
                 <!-- Camera Preview -->
                 <div class="relative bg-black rounded-xl overflow-hidden aspect-[4/3]">
-                    <video id="camera-preview" autoplay playsinline class="w-full h-full object-cover"></video>
+                    <video id="camera-preview" autoplay playsinline class="w-full h-full object-cover transform scale-x-[-1]"></video>
                     <div id="photo-result" class="hidden absolute inset-0">
                         <img id="captured-photo" class="w-full h-full object-cover" />
                     </div>
@@ -342,8 +342,11 @@
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
 
-            // Draw video frame to canvas
-            ctx.drawImage(video, 0, 0);
+            // Draw video frame to canvas (mirrored)
+            ctx.save();
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, -canvas.width, 0);
+            ctx.restore();
 
             // Add timestamp watermark
             const now = new Date();
