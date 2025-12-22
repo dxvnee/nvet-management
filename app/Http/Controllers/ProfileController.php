@@ -59,55 +59,8 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        // Handle avatar upload from camera (base64)
-        if ($request->filled('avatar_base64')) {
-            try {
-                $base64Image = $request->input('avatar_base64');
-
-                // Extract base64 data
-                if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
-                    $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
-                    $type = strtolower($type[1]);
-
-                    if (!in_array($type, ['jpg', 'jpeg', 'png', 'gif'])) {
-                        return Redirect::back()->withErrors(['avatar' => 'Format gambar tidak didukung.'])->withInput();
-                    }
-
-                    $imageData = base64_decode($base64Image);
-
-                    if ($imageData === false) {
-                        return Redirect::back()->withErrors(['avatar' => 'Gagal memproses gambar.'])->withInput();
-                    }
-
-                    // Process image with Intervention Image
-                    $manager = new ImageManager(new Driver());
-                    $image = $manager->read($imageData);
-
-                    // Resize to max 400px (for profile photo)
-                    $image->scale(width: 400);
-
-                    // Generate filename
-                    $filename = sprintf('avatars/%d_%s.jpg', $user->id, now()->format('YmdHis'));
-
-                    // Delete old avatar if exists
-                    if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-                        Storage::disk('public')->delete($user->avatar);
-                    }
-
-                    // Save as JPEG 80% quality
-                    $encoded = $image->toJpeg(80);
-                    Storage::disk('public')->put($filename, (string) $encoded);
-
-                    $user->avatar = $filename;
-                }
-            } catch (\Exception $e) {
-                \Log::error('Avatar upload error: ' . $e->getMessage());
-                return Redirect::back()->withErrors(['avatar' => 'Terjadi kesalahan saat mengupload foto.'])->withInput();
-            }
-        }
-
-        // Handle avatar upload from file input (legacy support)
-        elseif ($request->hasFile('avatar')) {
+        // Handle avatar upload from file input
+        if ($request->hasFile('avatar')) {
             try {
                 $file = $request->file('avatar');
 
@@ -126,16 +79,38 @@ class ProfileController extends Controller
                     Storage::disk('public')->delete($user->avatar);
                 }
 
-                // Store new avatar
-                $avatarPath = $file->store('avatars', 'public');
-                $user->avatar = $avatarPath;
+                // Process image with Intervention Image
+                $manager = new ImageManager(new Driver());
+                $image = $manager->read($file->getPathname());
+
+                // Crop to square (1:1 ratio) from center
+                $image->crop(
+                    min($image->width(), $image->height()), // Size
+                    min($image->width(), $image->height()), // Size
+                    intval(($image->width() - min($image->width(), $image->height())) / 2), // X offset (center)
+                    intval(($image->height() - min($image->width(), $image->height())) / 2)  // Y offset (center)
+                );
+
+                // Resize to max 400px (square)
+                $image->scale(width: 400);
+
+                // Generate filename
+                $filename = sprintf('avatars/%d_%s.jpg', $user->id, now()->format('YmdHis'));
+
+                // Save as JPEG 80% quality
+                $encoded = $image->toJpeg(80);
+                Storage::disk('public')->put($filename, (string) $encoded);
+
+                $user->avatar = $filename;
             } catch (\Exception $e) {
                 \Log::error('Avatar file upload error: ' . $e->getMessage());
                 return Redirect::back()->withErrors(['avatar' => 'Terjadi kesalahan saat mengupload foto.'])->withInput();
             }
         }
 
-        $user->fill($request->validated());
+        $validated = $request->validated();
+        unset($validated['avatar']); // Remove avatar from validated data since we handle it separately
+        $user->fill($validated);
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;

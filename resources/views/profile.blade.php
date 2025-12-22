@@ -11,7 +11,7 @@
                     <div class="relative">
                         <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-primary shadow-lg">
                             @if(auth()->user()->avatar && Storage::disk('public')->exists(auth()->user()->avatar))
-                                <img id="profile-preview" src="{{ asset('storage/' . auth()->user()->avatar) }}"
+                                <img id="profile-preview" src="{{ 'storage/' . auth()->user()->avatar }}"
                                     alt="Profile Photo" class="w-full h-full object-cover">
                             @else
                                 <img id="profile-preview"
@@ -19,19 +19,18 @@
                                     alt="Profile Photo" class="w-full h-full object-cover">
                             @endif
                         </div>
-                        <button type="button" onclick="openAvatarCameraModal()"
+                        <input type="file" id="avatar-file-input" name="avatar" accept="image/*" class="hidden"
+                            form="profile-form" onchange="handleFileSelection(this)">
+                        <button type="button" onclick="document.getElementById('avatar-file-input').click()"
                             class="absolute bottom-0 right-0 bg-primary hover:bg-primaryDark text-white p-3 rounded-full shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
                                 </path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             </svg>
                         </button>
                     </div>
-                    <p class="text-sm text-gray-500 mt-3 text-center lg:text-left">Klik ikon kamera untuk mengambil foto
-                    </p>
+
                 </div>
 
                 <!-- Profile Info Section -->
@@ -155,12 +154,12 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('profile.update') }}" class="space-y-6">
+            <form id="profile-form" method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data"
+                class="space-y-6">
                 @csrf
                 @method('patch')
 
-                <!-- Avatar Photo (Hidden Input for base64) -->
-                <input type="hidden" id="avatar-base64" name="avatar_base64">
+
 
                 <!-- Name -->
                 <div>
@@ -210,189 +209,34 @@
         </div>
     </div>
 
-    <!-- Camera Modal for Avatar -->
-    <div id="avatar-camera-modal"
-        class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg transform transition-all">
-            <div class="p-6">
-                <!-- Modal Header -->
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-                        <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
-                            </path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
-                        Ambil Foto Profil
-                    </h3>
-                    <button type="button" onclick="closeAvatarCameraModal()"
-                        class="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                        <svg class="h-6 w-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Camera Preview -->
-                <div class="relative bg-black rounded-xl overflow-hidden mb-4">
-                    <video id="avatar-camera-preview" autoplay playsinline class="w-full h-64 object-cover"></video>
-                    <canvas id="avatar-camera-canvas" class="hidden"></canvas>
-                </div>
-
-                <!-- Captured Photo Preview -->
-                <div id="avatar-photo-result" class="hidden mb-4">
-                    <p class="text-sm text-gray-600 mb-2">Foto yang diambil:</p>
-                    <div class="relative">
-                        <img id="avatar-captured-photo"
-                            class="w-full h-48 object-cover rounded-xl border-2 border-green-500">
-                        <div class="absolute top-2 right-2 bg-green-500 text-white p-1 rounded-full">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M5 13l4 4L19 7"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Camera Controls -->
-                <div class="flex gap-3">
-                    <button type="button" id="avatar-btn-capture" onclick="captureAvatarPhoto()"
-                        class="flex-1 py-3 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-primary to-primaryDark hover:from-primaryDark hover:to-primaryExtraDark transition-all shadow-lg flex items-center justify-center gap-2">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
-                            </path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
-                        Ambil Foto
-                    </button>
-                    <button type="button" id="avatar-btn-retake" onclick="retakeAvatarPhoto()"
-                        class="hidden py-3 px-6 rounded-xl font-bold text-gray-700 bg-gray-200 hover:bg-gray-300 transition-all flex items-center justify-center gap-2">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
-                            </path>
-                        </svg>
-                        Ulangi
-                    </button>
-                </div>
-
-                <!-- Use Photo Button -->
-                <button type="button" id="avatar-btn-use" onclick="useAvatarPhoto()"
-                    class="hidden w-full mt-3 py-3 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all shadow-lg flex items-center justify-center gap-2">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    Gunakan Foto Ini
-                </button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        let avatarCameraStream = null;
-        let avatarCapturedPhotoData = null;
+        // Handle file selection for avatar upload
+        function handleFileSelection(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
 
-        // Open camera modal for avatar
-        async function openAvatarCameraModal() {
-            avatarCapturedPhotoData = null;
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    showNotification('File harus berupa gambar!', 'error');
+                    input.value = '';
+                    return;
+                }
 
-            // Reset UI
-            document.getElementById('avatar-camera-preview').classList.remove('hidden');
-            document.getElementById('avatar-photo-result').classList.add('hidden');
-            document.getElementById('avatar-btn-capture').classList.remove('hidden');
-            document.getElementById('avatar-btn-retake').classList.add('hidden');
-            document.getElementById('avatar-btn-use').classList.add('hidden');
+                // Validate file size (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    showNotification('Ukuran file maksimal 2MB!', 'error');
+                    input.value = '';
+                    return;
+                }
 
-            // Show modal
-            document.getElementById('avatar-camera-modal').classList.remove('hidden');
-
-            // Start camera
-            try {
-                avatarCameraStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
-                    audio: false
-                });
-                document.getElementById('avatar-camera-preview').srcObject = avatarCameraStream;
-            } catch (error) {
-                alert('Tidak dapat mengakses kamera. Pastikan izin kamera telah diberikan.');
-                closeAvatarCameraModal();
+                // Preview the image
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profile-preview').src = e.target.result;
+                    showNotification('Foto berhasil dipilih! Akan otomatis di-crop menjadi square sebelum disimpan.', 'success');
+                };
+                reader.readAsDataURL(file);
             }
-        }
-
-        // Close camera modal
-        function closeAvatarCameraModal() {
-            // Stop camera stream
-            if (avatarCameraStream) {
-                avatarCameraStream.getTracks().forEach(track => track.stop());
-                avatarCameraStream = null;
-            }
-
-            document.getElementById('avatar-camera-modal').classList.add('hidden');
-            avatarCapturedPhotoData = null;
-        }
-
-        // Capture photo from camera
-        function captureAvatarPhoto() {
-            const video = document.getElementById('avatar-camera-preview');
-            const canvas = document.getElementById('avatar-camera-canvas');
-            const ctx = canvas.getContext('2d');
-
-            // Set canvas size to video size
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-
-            // Draw video frame to canvas
-            ctx.drawImage(video, 0, 0);
-
-            // Get image data
-            avatarCapturedPhotoData = canvas.toDataURL('image/jpeg', 0.8);
-
-            // Show captured photo
-            document.getElementById('avatar-captured-photo').src = avatarCapturedPhotoData;
-            document.getElementById('avatar-photo-result').classList.remove('hidden');
-
-            // Hide video, show controls
-            document.getElementById('avatar-camera-preview').classList.add('hidden');
-            document.getElementById('avatar-btn-capture').classList.add('hidden');
-            document.getElementById('avatar-btn-retake').classList.remove('hidden');
-            document.getElementById('avatar-btn-use').classList.remove('hidden');
-        }
-
-        // Retake photo
-        function retakeAvatarPhoto() {
-            avatarCapturedPhotoData = null;
-
-            // Show video again
-            document.getElementById('avatar-camera-preview').classList.remove('hidden');
-            document.getElementById('avatar-photo-result').classList.add('hidden');
-            document.getElementById('avatar-btn-capture').classList.remove('hidden');
-            document.getElementById('avatar-btn-retake').classList.add('hidden');
-            document.getElementById('avatar-btn-use').classList.add('hidden');
-        }
-
-        // Use captured photo
-        function useAvatarPhoto() {
-            if (!avatarCapturedPhotoData) {
-                alert('Silakan ambil foto terlebih dahulu.');
-                return;
-            }
-
-            // Set hidden input value
-            document.getElementById('avatar-base64').value = avatarCapturedPhotoData;
-
-            // Update preview in profile card
-            document.getElementById('profile-preview').src = avatarCapturedPhotoData;
-
-            // Close modal
-            closeAvatarCameraModal();
-
-            // Show notification
-            showNotification('Foto berhasil diambil! Klik "Simpan Perubahan" untuk menyimpan.', 'success');
         }
 
         function showNotification(message, type) {
