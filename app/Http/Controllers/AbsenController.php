@@ -34,6 +34,8 @@ class AbsenController extends Controller
             ->whereDate('tanggal', $today)
             ->first();
 
+        $hariLibur = $user->hari_libur;
+
         // Status berdasarkan model baru
         $sudahHadir = $absenHariIni && $absenHariIni->jam_masuk ? $absenHariIni : null;
         $sudahIzin = $absenHariIni && $absenHariIni->izin ? $absenHariIni : null;
@@ -54,6 +56,28 @@ class AbsenController extends Controller
             $totalJamKerjaText = $jam . ' jam ' . $menit . ' menit';
         }
 
+        $hariIni = $today->isoWeekday();
+        $liburOrNot = false;
+
+        if (in_array($hariIni, $hariLibur)) {
+            $liburOrNot = true;
+
+            // Auto-create absen record with libur status
+            if (!$absenHariIni) {
+                $absenHariIni = Absen::create([
+                    'user_id' => $user->id,
+                    'tanggal' => $today,
+                    'libur' => true,
+                    'izin' => false,
+                    'telat' => false,
+                    'tidak_hadir' => false,
+                ]);
+            } elseif (!$absenHariIni->libur && !$absenHariIni->jam_masuk) {
+                // Update existing record to mark as libur if not already marked and no jam_masuk
+                $absenHariIni->update(['libur' => true]);
+            }
+        }
+
         // Riwayat absen
         $riwayat = Absen::where('user_id', $user->id)
             ->orderBy('tanggal', 'desc')
@@ -66,6 +90,7 @@ class AbsenController extends Controller
             'sudahIzin',
             'sudahPulang',
             'riwayat',
+            'liburOrNot',
             'today',
             'totalJamKerja',
             'totalJamKerjaText'
@@ -402,9 +427,14 @@ class AbsenController extends Controller
                 'hadir_tepat_waktu' => $absensiHari
                     ->where('telat', 0)
                     ->where('izin', 0)
+                    ->where('libur', 0)
+                    ->where('tidak_hadir', 0)
+                    ->whereNotNull('jam_masuk')
                     ->count(),
                 'hadir_terlambat' => $absensiHari->where('telat', 1)->count(),
                 'izin' => $absensiHari->where('izin', true)->count(),
+                'libur' => $absensiHari->where('libur', true)->count(),
+                'tidak_hadir' => $absensiHari->where('tidak_hadir', true)->count(),
                 'absensi' => $absensiHari
             ];
         }

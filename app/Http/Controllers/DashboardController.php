@@ -61,9 +61,12 @@ class DashboardController extends Controller
                 ->toArray();
 
             // Absensi hari ini (semua pegawai)
-            $absensiHariIni = Absen::whereDate('tanggal', $today)->count();
+            $absensiHariIni = Absen::whereDate('tanggal', $today)
+                ->whereNotNull('jam_masuk')
+                ->count();
             $tepatWaktuHariIni = Absen::whereDate('tanggal', $today)
                 ->where('menit_telat', 0)
+                ->whereNotNull('jam_masuk')
                 ->count();
 
             $telatHariIni = Absen::whereDate('tanggal', $today)
@@ -73,8 +76,16 @@ class DashboardController extends Controller
             // Pegawai yang belum absen hari ini
             $sudahAbsen = Absen::whereDate('tanggal', $today)->pluck('user_id')->toArray();
             $belumAbsen = User::where('role', 'pegawai')
-                ->whereNotIn('id', $sudahAbsen)
+                ->whereIn('id', function ($q) {
+                    $q->select('user_id')
+                        ->from('absens')
+                        ->whereDate('tanggal', now())
+                        ->whereNull('jam_masuk')
+                        ->where('izin', false)
+                        ->where('libur', false);
+                })
                 ->get();
+
 
             // Total gaji bulan ini
             $totalGajiBulanIni = Penggajian::where('periode', $currentMonth)
@@ -88,6 +99,7 @@ class DashboardController extends Controller
             $aktivitasTerbaru = Absen::with('user')
                 ->orderBy('created_at', 'desc')
                 ->take(10)
+                ->whereNotNull('jam_masuk')
                 ->get();
 
             // Top pegawai telat bulan ini

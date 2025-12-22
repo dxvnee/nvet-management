@@ -160,13 +160,17 @@
                                         @endif
                                     </td>
                                     <td class="text-center py-3 px-4">
-                                        @if($absen->izin)
-                                            <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">Izin</span>
+                                        @if($absen->libur)
+                                            <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-500 text-white">Libur</span>
+                                        @elseif($absen->tidak_hadir)
+                                            <span class="px-3 py-1 rounded-full text-sm font-medium bg-gray-700 text-white">Tidak Hadir</span>
+                                        @elseif($absen->izin)
+                                            <span class="px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-700">Izin</span>
                                         @elseif($absen->jam_masuk)
                                             @if($absen->telat == 0)
                                                 <span class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">Tepat Waktu</span>
                                             @else
-                                                <span class="px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-700">Terlambat</span>
+                                                <span class="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-700">Terlambat</span>
                                             @endif
                                         @else
                                             <span class="px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700">Belum Absen</span>

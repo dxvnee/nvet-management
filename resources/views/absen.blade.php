@@ -19,7 +19,26 @@
             </div>
 
             <!-- Status Cards -->
-            @if($sudahIzin)
+            @if($liburOrNot)
+                <!-- Status Hari Libur - Full Width -->
+                <div class="w-full p-6 rounded-xl border-2 bg-blue-50 border-blue-300 mb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 rounded-lg bg-blue-500">
+                            <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-xl font-bold text-blue-700">Hari Libur</p>
+                            <p class="text-sm text-blue-600 mt-1">
+                                Hari ini adalah hari libur Anda. Tidak perlu melakukan absensi.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @elseif($sudahIzin)
                 <!-- Status Izin - Full Width -->
                 <div class="w-full p-6 rounded-xl border-2 bg-yellow-50 border-yellow-300 mb-6">
                     <div class="flex items-center gap-4">
@@ -105,6 +124,7 @@
             @endif
 
             <!-- Info Jam Kerja -->
+            @if(!$liburOrNot)
             <div class="bg-primaryUltraLight rounded-xl p-4 mb-6">
                 <div class="flex items-center gap-2 text-primary">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -156,9 +176,10 @@
                     </div>
                 @endif
             </div>
+            @endif
 
             <!-- Total Jam Kerja Hari Ini -->
-            @if($sudahHadir && !$sudahIzin)
+            @if($sudahHadir && !$sudahIzin && !$liburOrNot)
                 <div
                     class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 mb-6 border border-blue-200 animate-slide-up-delay-1">
                     <div class="flex items-center gap-3">
@@ -176,6 +197,8 @@
                 </div>
             @endif
 
+            <!-- Lokasi Status & Absen Buttons (tidak ditampilkan pada hari libur) -->
+            @if(!$liburOrNot)
             <!-- Lokasi Status -->
             <div id="location-status" class="mb-6 p-4 rounded-xl bg-gray-50 border border-gray-200">
                 <div class="flex items-center gap-3">
@@ -187,26 +210,28 @@
             <!-- Absen Buttons -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Tombol Hadir -->
-                <button type="button" onclick="openCameraModal('hadir')" {{ $sudahHadir || $sudahIzin ? 'disabled' : '' }}
+                <button type="button" onclick="openCameraModal('hadir')" {{ $sudahHadir || $sudahIzin || $liburOrNot ? 'disabled' : '' }}
                     class="w-full py-4 px-6 rounded-xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-2
-                    {{ $sudahHadir || $sudahIzin ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg hover:shadow-xl transform hover:scale-105' }}">
+                    {{ $sudahHadir || $sudahIzin || $liburOrNot ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg hover:shadow-xl transform hover:scale-105' }}">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
                         </path>
                     </svg>
-                    {{ $sudahHadir ? 'Sudah Hadir' : ($sudahIzin ? 'Sedang Izin' : 'Absen Hadir') }}
+                    {{ $liburOrNot ? 'Hari Libur' : ($sudahHadir ? 'Sudah Hadir' : ($sudahIzin ? 'Sedang Izin' : 'Absen Hadir')) }}
                 </button>
 
                 <!-- Tombol Izin -->
-                <button type="button" onclick="openCameraModal('izin')" {{ ($sudahIzin && !$sudahHadir) || $sudahPulang ? 'disabled' : '' }}
+                <button type="button" onclick="openCameraModal('izin')" {{ ($sudahIzin && !$sudahHadir) || $sudahPulang || $liburOrNot ? 'disabled' : '' }}
                     class="w-full py-4 px-6 rounded-xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-2
-                    {{ ($sudahIzin && !$sudahHadir) || $sudahPulang ? 'bg-gray-300 cursor-not-allowed' : ($sudahHadir ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl transform hover:scale-105' : 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 shadow-lg hover:shadow-xl transform hover:scale-105') }}">
+                    {{ ($sudahIzin && !$sudahHadir) || $sudahPulang || $liburOrNot ? 'bg-gray-300 cursor-not-allowed' : ($sudahHadir ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl transform hover:scale-105' : 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 shadow-lg hover:shadow-xl transform hover:scale-105') }}">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
                         </path>
                     </svg>
-                    @if($sudahIzin && $sudahHadir)
+                    @if($liburOrNot)
+                        Hari Libur
+                    @elseif($sudahIzin && $sudahHadir)
                         Sudah Izin Pulang
                     @elseif($sudahIzin)
                         Sedang Izin
@@ -220,15 +245,17 @@
                 </button>
 
                 <!-- Tombol Pulang -->
-                <button type="button" onclick="openCameraModal('pulang')" {{ $sudahPulang || !$sudahHadir || $sudahIzin ? 'disabled' : '' }}
+                <button type="button" onclick="openCameraModal('pulang')" {{ $sudahPulang || !$sudahHadir || $sudahIzin || $liburOrNot ? 'disabled' : '' }}
                     class="w-full py-4 px-6 rounded-xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-2
-                    {{ $sudahPulang || !$sudahHadir || $sudahIzin ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:scale-105' }}">
+                    {{ $sudahPulang || !$sudahHadir || $sudahIzin || $liburOrNot ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:scale-105' }}">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
                         </path>
                     </svg>
-                    @if($sudahPulang)
+                    @if($liburOrNot)
+                        Hari Libur
+                    @elseif($sudahPulang)
                         Sudah Pulang
                     @elseif($sudahIzin)
                         Sudah Izin Pulang
@@ -251,6 +278,7 @@
                     @endif
                 </button>
             </div>
+            @endif
         </div>
 
     </div>

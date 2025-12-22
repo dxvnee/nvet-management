@@ -34,6 +34,10 @@ class Absen extends Model
         'izin_keterangan',
         'foto_izin',
 
+        // STATUS
+        'tidak_hadir',
+        'libur',
+
         // SHIFT
         'shift_number',
 
@@ -49,6 +53,8 @@ class Absen extends Model
 
         'telat' => 'boolean',
         'izin' => 'boolean',
+        'tidak_hadir' => 'boolean',
+        'libur' => 'boolean',
 
         'menit_telat' => 'integer',
         'menit_kerja' => 'integer',

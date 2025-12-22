@@ -108,8 +108,18 @@
                                             </span>
                                         @endif
                                         @if($dayData['izin'] > 0)
-                                            <span class="px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-full" title="Izin">
+                                            <span class="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 rounded-full" title="Izin">
                                                 📝 {{ $dayData['izin'] }}
+                                            </span>
+                                        @endif
+                                        @if($dayData['libur'] > 0)
+                                            <span class="px-1.5 py-0.5 bg-blue-500 text-white rounded-full" title="Libur">
+                                                🌴 {{ $dayData['libur'] }}
+                                            </span>
+                                        @endif
+                                        @if($dayData['tidak_hadir'] > 0)
+                                            <span class="px-1.5 py-0.5 bg-gray-700 text-white rounded-full" title="Tidak Hadir">
+                                                ✗ {{ $dayData['tidak_hadir'] }}
                                             </span>
                                         @endif
                                     </div>
@@ -121,10 +131,16 @@
                                         <div class="w-2 h-2 rounded-full bg-green-500"></div>
                                     @endif
                                     @if($dayData['hadir_terlambat'] > 0)
-                                        <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-red-500"></div>
                                     @endif
                                     @if($dayData['izin'] > 0)
+                                        <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                    @endif
+                                    @if($dayData['libur'] > 0)
                                         <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                                    @endif
+                                    @if($dayData['tidak_hadir'] > 0)
+                                        <div class="w-2 h-2 rounded-full bg-gray-700"></div>
                                     @endif
                                 </div>
                             @else
@@ -142,18 +158,26 @@
         {{-- Legend --}}
         <div class="bg-white rounded-2xl shadow-xl p-6">
             <h3 class="text-lg font-semibold mb-4">Legenda</h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
                 <div class="flex items-center gap-2">
                     <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">✓</span>
                     <span class="text-sm">Hadir Tepat Waktu</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">⚠</span>
+                    <span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs">⚠</span>
                     <span class="text-sm">Hadir Terlambat</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">📝</span>
+                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">📝</span>
                     <span class="text-sm">Izin</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2 py-1 bg-blue-500 text-white rounded text-xs">🌴</span>
+                    <span class="text-sm">Libur</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2 py-1 bg-gray-700 text-white rounded text-xs">✗</span>
+                    <span class="text-sm">Tidak Hadir</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <span
