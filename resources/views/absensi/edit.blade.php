@@ -82,6 +82,19 @@
                             </div>
                         </div>
 
+                        {{-- Libur --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Hari Libur</label>
+                            <div class="flex items-center h-10">
+                                <input type="hidden" name="libur" value="0">
+                                <input type="checkbox" name="libur" id="libur" value="1" {{ $absen->libur ? 'checked' : '' }}
+                                    class="h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 rounded">
+                                <label for="libur" class="ml-2 block text-sm text-gray-900">
+                                    Libur
+                                </label>
+                            </div>
+                        </div>
+
                         {{-- Terlambat --}}
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Terlambat?</label>
@@ -214,7 +227,9 @@
                 <div class="text-center">
                     <div class="text-sm text-gray-600">Status</div>
                     <div class="font-semibold">
-                        @if($absen->tidak_hadir)
+                        @if($absen->libur)
+                            <span class="text-blue-600">Libur</span>
+                        @elseif($absen->tidak_hadir)
                             <span class="text-gray-600">Tidak Hadir</span>
                         @elseif($absen->izin)
                             <span class="text-yellow-600">Izin</span>

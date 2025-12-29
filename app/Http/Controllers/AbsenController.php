@@ -563,6 +563,7 @@ class AbsenController extends Controller
             'telat' => 'nullable',
             'menit_telat' => 'nullable|integer|min:0',
             'tidak_hadir' => 'nullable',
+            'libur' => 'nullable',
             'status' => 'nullable|string|in:tepat_waktu,telat',
             'lat_masuk' => 'nullable|numeric',
             'lng_masuk' => 'nullable|numeric',
@@ -613,6 +614,9 @@ class AbsenController extends Controller
 
         // Handle tidak hadir status
         $data['tidak_hadir'] = $request->has('tidak_hadir') ? (bool) $request->tidak_hadir : false;
+
+        // Handle libur status
+        $data['libur'] = $request->has('libur') ? (bool) $request->libur : false;
 
         // Handle status
         if ($request->filled('status')) {
