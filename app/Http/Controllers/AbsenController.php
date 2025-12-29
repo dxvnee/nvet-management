@@ -199,7 +199,7 @@ class AbsenController extends Controller
             }
 
             // Determine jam masuk based on shift or non-shift
-            $jamMasukSetting = Carbon::today()->setTime(9, 0); // Default
+            $jamMasukSetting = Carbon::parse($user->jam_masuk); // Default
             $shiftNumber = null;
 
             if ($user->is_shift && $user->shift_partner_id) {

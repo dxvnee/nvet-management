@@ -176,7 +176,7 @@
                     <span class="text-sm">Libur</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="px-2 py-1 bg-gray-700 text-white rounded text-xs">✗</span>
+                    <span class="px-2 py-1 bg-gray-500 text-white rounded text-xs">✗</span>
                     <span class="text-sm">Tidak Hadir</span>
                 </div>
                 <div class="flex items-center gap-2">

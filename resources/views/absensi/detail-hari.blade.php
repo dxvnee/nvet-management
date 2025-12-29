@@ -163,7 +163,7 @@
                                         @if($absen->libur)
                                             <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-500 text-white">Libur</span>
                                         @elseif($absen->tidak_hadir)
-                                            <span class="px-3 py-1 rounded-full text-sm font-medium bg-gray-700 text-white">Tidak Hadir</span>
+                                            <span class="px-3 py-1 rounded-full text-sm font-medium bg-gray-500 text-white">Tidak Hadir</span>
                                         @elseif($absen->izin)
                                             <span class="px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-700">Izin</span>
                                         @elseif($absen->jam_masuk)
