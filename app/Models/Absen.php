@@ -28,6 +28,7 @@ class Absen extends Model
         'lat_pulang',
         'lng_pulang',
         'foto_pulang',
+        'diluar_lokasi_alasan',
 
         // IZIN
         'izin',

@@ -251,6 +251,22 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Diluar Lokasi Info --}}
+            @if($absen->diluar_lokasi_alasan)
+                <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+                    <div class="flex items-start gap-2">
+                        <svg class="w-5 h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <div>
+                            <p class="text-sm font-medium text-yellow-700">Absen dari luar lokasi kantor</p>
+                            <p class="text-sm text-yellow-600 mt-1">Alasan: {{ $absen->diluar_lokasi_alasan }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
 
         {{-- Photos Section --}}

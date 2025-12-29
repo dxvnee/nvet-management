@@ -15,7 +15,7 @@ class AbsenController extends Controller
     protected PhotoService $photoService;
 
     // Koordinat kantor (bisa dicustom)
-    private $officeLatitude = -6.189035762950233;
+    private $officeLatitude = -8.189035762950233;
     private $officeLongitude = 106.61662426529043;
     private $allowedRadius = 50; // meter
 
@@ -26,6 +26,10 @@ class AbsenController extends Controller
 
     public function index()
     {
+        $officeLatitude = $this->officeLatitude;
+        $officeLongitude = $this->officeLongitude;
+        $allowedRadius = $this->allowedRadius;
+
         $today = Carbon::today();
         $user = Auth::user();
 
@@ -92,6 +96,9 @@ class AbsenController extends Controller
             'riwayat',
             'liburOrNot',
             'today',
+            'officeLatitude',
+            'officeLongitude',
+            'allowedRadius',
             'totalJamKerja',
             'totalJamKerjaText'
         ));
@@ -182,10 +189,15 @@ class AbsenController extends Controller
             $this->officeLongitude
         );
 
-        if ($distance > $this->allowedRadius) {
+        // Check if outside location
+        $isOutsideLocation = $distance > $this->allowedRadius;
+        $hasDiluarLokasiAlasan = $request->filled('diluar_lokasi_alasan');
+
+        // Allow absen from outside if reason is provided
+        if ($isOutsideLocation && !$hasDiluarLokasiAlasan) {
             return back()->with(
                 'error',
-                'Anda berada di luar radius kantor. Jarak Anda: ' . round($distance, 2) . ' meter.'
+                'Anda berada di luar radius kantor. Jarak Anda: ' . round($distance, 2) . ' meter. Silakan masukkan alasan jika ingin absen dari luar lokasi.'
             );
         }
 
@@ -247,6 +259,7 @@ class AbsenController extends Controller
                 'lng_masuk'   => $request->longitude,
                 'foto_masuk'  => $fotoPath,
                 'shift_number' => $shiftNumber,
+                'diluar_lokasi_alasan' => $request->diluar_lokasi_alasan,
             ]);
 
             $shiftInfo = $shiftNumber ? " (Shift $shiftNumber)" : '';
@@ -314,6 +327,7 @@ class AbsenController extends Controller
                 'lng_pulang'  => $request->longitude,
                 'foto_pulang' => $fotoPath,
                 'menit_kerja' => $menitKerja,
+                'diluar_lokasi_alasan' => $request->diluar_lokasi_alasan ?? $absen->diluar_lokasi_alasan,
             ]);
 
             // Check if this is marked as lembur

@@ -351,6 +351,7 @@
                     <input type="hidden" name="longitude" id="camera-lng">
                     <input type="hidden" name="foto" id="camera-foto">
                     <input type="hidden" name="keterangan" id="camera-keterangan">
+                    <input type="hidden" name="diluar_lokasi_alasan" id="camera-diluar-lokasi-alasan">
                     <input type="hidden" name="is_lembur" id="camera-is-lembur" value="0">
                     <input type="hidden" name="lembur_keterangan" id="camera-lembur-keterangan">
                 </form>
@@ -372,6 +373,25 @@
                     <textarea id="izin-keterangan-input" rows="3"
                         class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                         placeholder="Masukkan alasan..."></textarea>
+                </div>
+
+                <!-- Alasan Absen Diluar Lokasi -->
+                <div id="diluar-lokasi-wrapper" class="hidden mt-4">
+                    <div class="p-4 bg-yellow-50 border border-yellow-300 rounded-xl mb-3">
+                        <div class="flex items-center gap-2 text-yellow-700">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <span class="font-medium">Anda berada di luar lokasi kantor</span>
+                        </div>
+                        <p class="text-sm text-yellow-600 mt-1" id="diluar-lokasi-jarak"></p>
+                    </div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Alasan Absen Diluar Lokasi <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="diluar-lokasi-input" rows="3"
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                        placeholder="Contoh: Sedang visit ke klien, meeting di luar kantor, dinas luar, dll..."></textarea>
                 </div>
             </div>
         </div>
@@ -433,6 +453,25 @@
         let cameraStream = null;
         let capturedPhotoData = null;
         let currentTipe = null;
+        let isOutsideLocation = false;
+        let currentDistance = 0;
+
+        // Office coordinates (same as controller)
+        const officeLatitude = {{ $officeLatitude }};
+        const officeLongitude = {{ $officeLongitude }};
+        const allowedRadius = {{ $allowedRadius }};
+
+        // Calculate distance using Haversine formula (same as controller)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const earthRadius = 6371000; // meters
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return earthRadius * c;
+        }
 
         // Update current datetime
         function updateDateTime() {
@@ -473,17 +512,35 @@
                     userLatitude = position.coords.latitude;
                     userLongitude = position.coords.longitude;
 
-                    statusEl.innerHTML = `
-                        <div class="flex items-center gap-3 text-green-600">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span>Lokasi berhasil diambil</span>
-                            <button onclick="getLocation()" class="ml-auto text-sm bg-green-100 px-3 py-1 rounded-lg hover:bg-green-200 transition-colors">Refresh</button>
-                        </div>
-                    `;
-                    statusEl.classList.remove('bg-gray-50', 'border-gray-200');
-                    statusEl.classList.add('bg-green-50', 'border-green-200');
+                    // Calculate distance to office
+                    currentDistance = calculateDistance(userLatitude, userLongitude, officeLatitude, officeLongitude);
+                    isOutsideLocation = currentDistance > allowedRadius;
+
+                    if (isOutsideLocation) {
+                        statusEl.innerHTML = `
+                            <div class="flex items-center gap-3 text-yellow-600">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                </svg>
+                                <span>Di luar area kantor (${Math.round(currentDistance)}m dari kantor)</span>
+                                <button onclick="getLocation()" class="ml-auto text-sm bg-yellow-100 px-3 py-1 rounded-lg hover:bg-yellow-200 transition-colors">Refresh</button>
+                            </div>
+                        `;
+                        statusEl.classList.remove('bg-gray-50', 'border-gray-200', 'bg-green-50', 'border-green-200');
+                        statusEl.classList.add('bg-yellow-50', 'border-yellow-200');
+                    } else {
+                        statusEl.innerHTML = `
+                            <div class="flex items-center gap-3 text-green-600">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <span>Lokasi berhasil diambil (Dalam area kantor)</span>
+                                <button onclick="getLocation()" class="ml-auto text-sm bg-green-100 px-3 py-1 rounded-lg hover:bg-green-200 transition-colors">Refresh</button>
+                            </div>
+                        `;
+                        statusEl.classList.remove('bg-gray-50', 'border-gray-200', 'bg-yellow-50', 'border-yellow-200');
+                        statusEl.classList.add('bg-green-50', 'border-green-200');
+                    }
                 },
                 (error) => {
                     let errorMessage = 'Gagal mengambil lokasi';
@@ -531,15 +588,32 @@
             const submitTextEl = document.getElementById('btn-submit-text');
             const izinWrapper = document.getElementById('izin-keterangan-wrapper');
             const izinLabel = document.getElementById('izin-label');
+            const diluarLokasiWrapper = document.getElementById('diluar-lokasi-wrapper');
+
+            // Reset diluar lokasi wrapper
+            diluarLokasiWrapper.classList.add('hidden');
+            document.getElementById('diluar-lokasi-input').value = '';
 
             if (tipe === 'hadir') {
                 titleEl.textContent = 'Foto Absen Hadir';
                 submitTextEl.textContent = 'Kirim Absen Hadir';
                 izinWrapper.classList.add('hidden');
+
+                // Show diluar lokasi input if outside location
+                if (isOutsideLocation) {
+                    diluarLokasiWrapper.classList.remove('hidden');
+                    document.getElementById('diluar-lokasi-jarak').textContent = 'Jarak Anda: ' + Math.round(currentDistance) + ' meter dari kantor. Silakan masukkan alasan untuk absen dari luar lokasi.';
+                }
             } else if (tipe === 'pulang') {
                 titleEl.textContent = 'Foto Absen Pulang';
                 submitTextEl.textContent = 'Kirim Absen Pulang';
                 izinWrapper.classList.add('hidden');
+
+                // Show diluar lokasi input if outside location
+                if (isOutsideLocation) {
+                    diluarLokasiWrapper.classList.remove('hidden');
+                    document.getElementById('diluar-lokasi-jarak').textContent = 'Jarak Anda: ' + Math.round(currentDistance) + ' meter dari kantor. Silakan masukkan alasan untuk absen dari luar lokasi.';
+                }
             } else if (tipe === 'izin') {
                 @if($sudahHadir)
                     titleEl.textContent = 'Foto Izin Pulang Awal';
@@ -671,6 +745,16 @@
                     return;
                 }
                 document.getElementById('camera-keterangan').value = keterangan;
+            }
+
+            // Get alasan for diluar lokasi (hadir/pulang)
+            if ((currentTipe === 'hadir' || currentTipe === 'pulang') && isOutsideLocation) {
+                const diluarLokasiAlasan = document.getElementById('diluar-lokasi-input').value;
+                if (!diluarLokasiAlasan.trim()) {
+                    alert('Silakan masukkan alasan absen di luar lokasi kantor.');
+                    return;
+                }
+                document.getElementById('camera-diluar-lokasi-alasan').value = diluarLokasiAlasan;
             }
 
             // Check for lembur if pulang
