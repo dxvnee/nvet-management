@@ -16,7 +16,7 @@ class AbsenController extends Controller
     protected PhotoService $photoService;
 
     // Koordinat kantor (bisa dicustom)
-    private $officeLatitude = -8.189035762950233;
+    private $officeLatitude = -6.189035762950233;
     private $officeLongitude = 106.61662426529043;
     private $allowedRadius = 50; // meter
 
@@ -491,7 +491,7 @@ class AbsenController extends Controller
             $tanggal = $date->format('Y-m-d');
             $monthDay = $date->format('m-d');
             $absensiHari = $absensiBulan->get($tanggal, collect());
-            
+
             // Check if this day is a public holiday
             $publicHoliday = $publicHolidays->get($monthDay);
 

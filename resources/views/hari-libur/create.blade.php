@@ -13,7 +13,7 @@
         </a>
 
         {{-- Form --}}
-        <div class="bg-white rounded-2xl shadow-xl p-6 max-w-2xl">
+        <div class="bg-white rounded-2xl shadow-xl p-6 w-full">
             <div class="flex items-center gap-3 mb-6">
                 <div class="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
                     <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
