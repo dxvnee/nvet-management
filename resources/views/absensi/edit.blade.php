@@ -67,8 +67,22 @@
                         </svg>
                         Status Kehadiran
                     </h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
 
+                        {{-- Tidak Hadir --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Kehadiran</label>
+                            <div class="flex items-center h-10">
+                                <input type="hidden" name="tidak_hadir" value="0">
+                                <input type="checkbox" name="tidak_hadir" id="tidak_hadir" value="1" {{ $absen->tidak_hadir ? 'checked' : '' }}
+                                    class="h-4 w-4 text-gray-500 focus:ring-gray-500 border-gray-300 rounded">
+                                <label for="tidak_hadir" class="ml-2 block text-sm text-gray-900">
+                                    Tidak Hadir
+                                </label>
+                            </div>
+                        </div>
+
+                        {{-- Terlambat --}}
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Terlambat?</label>
                             <div class="flex items-center h-10">
@@ -200,16 +214,18 @@
                 <div class="text-center">
                     <div class="text-sm text-gray-600">Status</div>
                     <div class="font-semibold">
-                        @if($absen->izin)
-                            Izin
+                        @if($absen->tidak_hadir)
+                            <span class="text-gray-600">Tidak Hadir</span>
+                        @elseif($absen->izin)
+                            <span class="text-yellow-600">Izin</span>
                         @elseif($absen->jam_masuk)
                             @if($absen->status === 'tepat_waktu')
-                                Tepat Waktu
+                                <span class="text-green-600">Tepat Waktu</span>
                             @else
-                                Terlambat
+                                <span class="text-red-600">Terlambat</span>
                             @endif
                         @else
-                            Belum Absen
+                            <span class="text-gray-400">Belum Absen</span>
                         @endif
                     </div>
                 </div>

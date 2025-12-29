@@ -562,6 +562,7 @@ class AbsenController extends Controller
             'izin_keterangan' => 'nullable|string|max:255',
             'telat' => 'nullable',
             'menit_telat' => 'nullable|integer|min:0',
+            'tidak_hadir' => 'nullable',
             'status' => 'nullable|string|in:tepat_waktu,telat',
             'lat_masuk' => 'nullable|numeric',
             'lng_masuk' => 'nullable|numeric',
@@ -609,6 +610,9 @@ class AbsenController extends Controller
         if ($request->has('menit_telat')) {
             $data['menit_telat'] = (int) $request->menit_telat;
         }
+
+        // Handle tidak hadir status
+        $data['tidak_hadir'] = $request->has('tidak_hadir') ? (bool) $request->tidak_hadir : false;
 
         // Handle status
         if ($request->filled('status')) {
