@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Absen;
+use App\Models\HariLibur;
 use App\Models\Lembur;
 use App\Models\User;
 use App\Services\PhotoService;
@@ -62,8 +63,11 @@ class AbsenController extends Controller
 
         $hariIni = $today->isoWeekday();
         $liburOrNot = false;
+        $isPublicHoliday = HariLibur::isHoliday($today);
+        $publicHolidayInfo = HariLibur::getHoliday($today);
 
-        if (in_array($hariIni, $hariLibur)) {
+        // Check personal holiday OR public holiday
+        if (in_array($hariIni, $hariLibur) || $isPublicHoliday) {
             $liburOrNot = true;
 
             // Auto-create absen record with libur status
@@ -88,6 +92,9 @@ class AbsenController extends Controller
             ->limit(20)
             ->get();
 
+        // Get holiday name for display
+        $namaHariLibur = $publicHolidayInfo ? $publicHolidayInfo->nama : null;
+
         return view('absen', compact(
             'absenHariIni',
             'sudahHadir',
@@ -95,6 +102,7 @@ class AbsenController extends Controller
             'sudahPulang',
             'riwayat',
             'liburOrNot',
+            'namaHariLibur',
             'today',
             'officeLatitude',
             'officeLongitude',
@@ -459,6 +467,16 @@ class AbsenController extends Controller
         $startDate = Carbon::create($tahun, $bulan, 1)->startOfMonth();
         $endDate = Carbon::create($tahun, $bulan, 1)->endOfMonth();
 
+        // Get public holidays for this month
+        $publicHolidays = HariLibur::where(function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('tanggal', [$startDate, $endDate]);
+        })->orWhere(function ($query) use ($startDate, $endDate) {
+            $query->where('is_recurring', true)
+                ->whereMonth('tanggal', $startDate->month);
+        })->get()->keyBy(function ($item) {
+            return $item->tanggal->format('m-d');
+        });
+
         $absensiBulan = Absen::with('user')
             ->whereBetween('tanggal', [$startDate, $endDate])
             ->orderBy('tanggal')
@@ -471,7 +489,11 @@ class AbsenController extends Controller
         $kalenderData = [];
         for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
             $tanggal = $date->format('Y-m-d');
+            $monthDay = $date->format('m-d');
             $absensiHari = $absensiBulan->get($tanggal, collect());
+            
+            // Check if this day is a public holiday
+            $publicHoliday = $publicHolidays->get($monthDay);
 
             $kalenderData[$tanggal] = [
                 'tanggal' => $date,
@@ -487,7 +509,8 @@ class AbsenController extends Controller
                 'izin' => $absensiHari->where('izin', true)->count(),
                 'libur' => $absensiHari->where('libur', true)->count(),
                 'tidak_hadir' => $absensiHari->where('tidak_hadir', true)->count(),
-                'absensi' => $absensiHari
+                'absensi' => $absensiHari,
+                'public_holiday' => $publicHoliday,
             ];
         }
 

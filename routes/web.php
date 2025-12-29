@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AbsenController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HariLiburController;
 use App\Http\Controllers\LemburController;
 use App\Http\Controllers\PenggajianController;
 use App\Http\Controllers\ProfileController;
@@ -47,6 +48,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/lembur-admin', [LemburController::class, 'adminIndex'])->name('lembur.admin');
         Route::patch('/lembur/{lembur}/approve', [LemburController::class, 'approve'])->name('lembur.approve');
         Route::patch('/lembur/{lembur}/reject', [LemburController::class, 'reject'])->name('lembur.reject');
+
+        // Hari Libur Routes
+        Route::resource('hari-libur', HariLiburController::class)->except(['show']);
 
         // Absensi Kalender Routes
         Route::get('/absensi-kalender', [AbsenController::class, 'kalender'])->name('absen.kalender');

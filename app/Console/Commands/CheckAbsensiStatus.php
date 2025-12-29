@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Absen;
+use App\Models\HariLibur;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -33,6 +34,14 @@ class CheckAbsensiStatus extends Command
 
         $this->info("Checking absensi status for: " . $date->format('Y-m-d') . " (Day: $hariIni)");
 
+        // Check if today is a public holiday
+        $isPublicHoliday = HariLibur::isHoliday($date);
+        $publicHolidayInfo = HariLibur::getHoliday($date);
+        
+        if ($isPublicHoliday) {
+            $this->info("📅 Hari ini adalah hari libur umum: " . ($publicHolidayInfo->nama ?? 'Hari Libur'));
+        }
+
         // Get all pegawai
         $pegawai = User::where('role', 'pegawai')->get();
 
@@ -41,9 +50,10 @@ class CheckAbsensiStatus extends Command
         $lupaPulangCount = 0;
 
         foreach ($pegawai as $user) {
-            // Check if this date is user's holiday
+            // Check if this date is user's personal holiday OR public holiday
             $hariLibur = $user->hari_libur ?? [];
-            $isLibur = in_array($hariIni, $hariLibur);// Sunday (7) is always holiday
+            $isPersonalLibur = in_array($hariIni, $hariLibur);
+            $isLibur = $isPersonalLibur || $isPublicHoliday;
 
             $absen = Absen::where('user_id', $user->id)
                 ->where('tanggal', $date->toDateString())

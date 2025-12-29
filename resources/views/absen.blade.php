@@ -31,12 +31,14 @@
                             </svg>
                         </div>
                         <div class="flex-1">
-                            <p class="text-xl font-bold text-blue-700">Hari Libur</p>
+                            <p class="text-xl font-bold text-blue-700">
+                                Hari Libur{{ isset($namaHariLibur) && $namaHariLibur ? ' - ' . $namaHariLibur : '' }}
+                            </p>
                             <p class="text-sm text-blue-600 mt-1">
                                 @if($sudahHadir)
                                     Anda sedang lembur hari libur. Masuk: {{ $sudahHadir->jam_masuk->format('H:i') }}
                                 @else
-                                    Hari ini adalah hari libur Anda. Klik tombol di bawah jika ingin lembur.
+                                    Hari ini adalah hari libur{{ isset($namaHariLibur) && $namaHariLibur ? ' (' . $namaHariLibur . ')' : '' }}. Klik tombol di bawah jika ingin lembur.
                                 @endif
                             </p>
                         </div>

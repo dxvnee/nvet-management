@@ -70,6 +70,7 @@
                         $dayData = $kalenderData[$dateKey] ?? null;
                         $isToday = $currentDate->isToday();
                         $isWeekend = $currentDate->isWeekend();
+                        $publicHoliday = $dayData['public_holiday'] ?? null;
                     @endphp
 
                     <a href="{{ route('absen.detailHari', $dateKey) }}" class="block group h-full">
@@ -77,12 +78,20 @@
                             class="h-full min-h-[80px] md:min-h-[100px] p-1 md:p-2 rounded-lg border flex flex-col justify-between
                                         {{ $isToday ? 'border-primary bg-primaryExtraLight' : 'border-gray-200 bg-white' }}
                                         {{ $isWeekend ? 'bg-gray-50' : '' }}
+                                        {{ $publicHoliday ? 'bg-red-50 border-red-200' : '' }}
                                         hover:shadow-md hover:border-primary hover:scale-[1.01] active:scale-[0.98] transition-all duration-200 relative overflow-hidden">
 
+                            {{-- Public Holiday Badge --}}
+                            @if($publicHoliday)
+                                <div class="absolute top-0 left-0 right-0 bg-red-500 text-white text-[8px] md:text-[10px] text-center py-0.5 font-medium truncate px-1">
+                                    {{ $publicHoliday->nama }}
+                                </div>
+                            @endif
+
                             {{-- Date Number --}}
-                            <div class="text-right mb-1">
+                            <div class="text-right mb-1 {{ $publicHoliday ? 'mt-3 md:mt-4' : '' }}">
                                 <span class="inline-flex items-center justify-center w-6 h-6 md:w-7 md:h-7 rounded-full text-xs md:text-sm font-medium
-                                                {{ $isToday ? 'bg-primary text-white font-bold' : 'text-gray-700' }}">
+                                                {{ $isToday ? 'bg-primary text-white font-bold' : ($publicHoliday ? 'text-red-600' : 'text-gray-700') }}">
                                     {{ $day }}
                                 </span>
                             </div>
@@ -158,7 +167,7 @@
         {{-- Legend --}}
         <div class="bg-white rounded-2xl shadow-xl p-6">
             <h3 class="text-lg font-semibold mb-4">Legenda</h3>
-            <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
                 <div class="flex items-center gap-2">
                     <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">✓</span>
                     <span class="text-sm">Hadir Tepat Waktu</span>
@@ -173,7 +182,11 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="px-2 py-1 bg-blue-500 text-white rounded text-xs">🌴</span>
-                    <span class="text-sm">Libur</span>
+                    <span class="text-sm">Libur Pegawai</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2 py-1 bg-red-500 text-white rounded text-xs">🏛️</span>
+                    <span class="text-sm">Hari Libur Umum</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="px-2 py-1 bg-gray-500 text-white rounded text-xs">✗</span>
