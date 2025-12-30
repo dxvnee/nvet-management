@@ -66,8 +66,22 @@ class AbsenController extends Controller
         $isPublicHoliday = HariLibur::isHoliday($today);
         $publicHolidayInfo = HariLibur::getHoliday($today);
 
-        // Check personal holiday OR public holiday
-        if (in_array($hariIni, $hariLibur) || $isPublicHoliday) {
+        // Check if it's a special working day (hari khusus with is_masuk and not lembur)
+        $isHariKhususKerjaBiasa = false;
+        if ($publicHolidayInfo) {
+            // Jika hari khusus dengan is_masuk = true dan is_lembur = false,
+            // maka dianggap sebagai hari kerja biasa
+            if (
+                $publicHolidayInfo->tipe === 'hari_khusus' &&
+                $publicHolidayInfo->is_masuk &&
+                !$publicHolidayInfo->is_lembur
+            ) {
+                $isHariKhususKerjaBiasa = true;
+            }
+        }
+
+        // Check personal holiday OR public holiday (but not hari khusus kerja biasa)
+        if ((in_array($hariIni, $hariLibur) || $isPublicHoliday) && !$isHariKhususKerjaBiasa) {
             $liburOrNot = true;
 
             // Auto-create absen record with libur status
@@ -86,6 +100,11 @@ class AbsenController extends Controller
             }
         }
 
+        // Jika hari khusus kerja biasa, pastikan record absen tidak ditandai libur
+        if ($isHariKhususKerjaBiasa && $absenHariIni && $absenHariIni->libur && !$absenHariIni->jam_masuk) {
+            $absenHariIni->update(['libur' => false]);
+        }
+
         // Riwayat absen
         $riwayat = Absen::where('user_id', $user->id)
             ->orderBy('tanggal', 'desc')
@@ -95,6 +114,9 @@ class AbsenController extends Controller
         // Get holiday name for display
         $namaHariLibur = $publicHolidayInfo ? $publicHolidayInfo->nama : null;
 
+        // Get hari khusus info for view
+        $hariKhususInfo = $isHariKhususKerjaBiasa ? $publicHolidayInfo : null;
+
         return view('absen', compact(
             'absenHariIni',
             'sudahHadir',
@@ -103,6 +125,7 @@ class AbsenController extends Controller
             'riwayat',
             'liburOrNot',
             'namaHariLibur',
+            'hariKhususInfo',
             'today',
             'officeLatitude',
             'officeLongitude',
@@ -209,6 +232,13 @@ class AbsenController extends Controller
             );
         }
 
+        // Check for hari khusus kerja biasa (special working day with custom hours)
+        $hariKhusus = HariLibur::getHoliday($today);
+        $isHariKhususKerjaBiasa = $hariKhusus && 
+            $hariKhusus->tipe === 'hari_khusus' && 
+            $hariKhusus->is_masuk && 
+            !$hariKhusus->is_lembur;
+
         /* ===============================
      * HADIR
      * =============================== */
@@ -241,6 +271,20 @@ class AbsenController extends Controller
                 // Non-shift user
                 if ($user->jam_masuk) {
                     $jamMasukSetting = Carbon::parse($user->jam_masuk);
+                }
+            }
+
+            // Override with hari khusus custom jam masuk if available
+            if ($isHariKhususKerjaBiasa && $hariKhusus->jam_masuk) {
+                if ($hariKhusus->is_shift_enabled && $user->is_shift && $shiftNumber) {
+                    // Use shift-specific jam masuk from hari khusus
+                    $customJamMasuk = $shiftNumber === 1 ? $hariKhusus->shift1_jam_masuk : $hariKhusus->shift2_jam_masuk;
+                    if ($customJamMasuk) {
+                        $jamMasukSetting = Carbon::parse($customJamMasuk);
+                    }
+                } else {
+                    // Use general jam masuk from hari khusus
+                    $jamMasukSetting = Carbon::parse($hariKhusus->jam_masuk);
                 }
             }
 
@@ -331,6 +375,26 @@ class AbsenController extends Controller
                     $jamPulangSetting = Carbon::today()->setTime(
                         Carbon::parse($user->jam_keluar)->hour,
                         Carbon::parse($user->jam_keluar)->minute
+                    );
+                }
+            }
+
+            // Override with hari khusus custom jam keluar if available
+            if ($isHariKhususKerjaBiasa && $hariKhusus->jam_keluar) {
+                if ($hariKhusus->is_shift_enabled && $user->is_shift && $absen->shift_number) {
+                    // Use shift-specific jam keluar from hari khusus
+                    $customJamKeluar = (int) $absen->shift_number === 1 ? $hariKhusus->shift1_jam_keluar : $hariKhusus->shift2_jam_keluar;
+                    if ($customJamKeluar) {
+                        $jamPulangSetting = Carbon::today()->setTime(
+                            Carbon::parse($customJamKeluar)->hour,
+                            Carbon::parse($customJamKeluar)->minute
+                        );
+                    }
+                } else {
+                    // Use general jam keluar from hari khusus
+                    $jamPulangSetting = Carbon::today()->setTime(
+                        Carbon::parse($hariKhusus->jam_keluar)->hour,
+                        Carbon::parse($hariKhusus->jam_keluar)->minute
                     );
                 }
             }

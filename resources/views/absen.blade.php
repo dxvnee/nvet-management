@@ -160,6 +160,29 @@
                 </div>
             @endif
 
+            <!-- Info Hari Khusus -->
+            @if(isset($hariKhususInfo) && $hariKhususInfo)
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 mb-6 border border-blue-200">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-blue-500 rounded-lg">
+                        <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-blue-700">{{ $hariKhususInfo->nama }}</p>
+                        <p class="text-xs text-blue-600">
+                            Hari khusus - tetap masuk kerja seperti biasa
+                            @if($hariKhususInfo->jam_masuk && $hariKhususInfo->jam_keluar)
+                                ({{ \Carbon\Carbon::parse($hariKhususInfo->jam_masuk)->format('H:i') }} - {{ \Carbon\Carbon::parse($hariKhususInfo->jam_keluar)->format('H:i') }})
+                            @endif
+                        </p>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Info Jam Kerja -->
             @if(!$liburOrNot)
             <div class="bg-primaryUltraLight rounded-xl p-4 mb-6">
