@@ -34,13 +34,13 @@
                         <span class="text-xs text-white/70 uppercase tracking-wider">Total Data</span>
                         <span class="text-lg font-semibold">{{ $riwayat->total() }}</span>
                     </div>
-                    <div class="hidden lg:flex flex-col items-center bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-3">
-                        <span class="text-xs text-white/70 uppercase tracking-wider">Status</span>
-                        <span class="text-sm font-semibold flex items-center gap-1">
-                            <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                            Aktif
-                        </span>
-                    </div>
+                    <a href="{{ route('absen.riwayatKalender') }}" 
+                       class="group flex items-center gap-2 px-4 py-2.5 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl transition-all duration-300">
+                        <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="font-medium">Tampilan Kalender</span>
+                    </a>
                 </div>
             </div>
         </div>

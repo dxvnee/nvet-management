@@ -185,6 +185,120 @@ class AbsenController extends Controller
         ));
     }
 
+    public function riwayatKalender(Request $request)
+    {
+        $user = Auth::user();
+        $bulan = $request->get('bulan', Carbon::now()->month);
+        $tahun = $request->get('tahun', Carbon::now()->year);
+
+        // Ambil semua absensi user dalam bulan tersebut
+        $startDate = Carbon::create($tahun, $bulan, 1)->startOfMonth();
+        $endDate = Carbon::create($tahun, $bulan, 1)->endOfMonth();
+
+        // Get public holidays for this month
+        $publicHolidays = HariLibur::where(function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('tanggal', [$startDate, $endDate]);
+        })->orWhere(function ($query) use ($startDate, $endDate) {
+            $query->where('is_recurring', true)
+                ->whereMonth('tanggal', $startDate->month);
+        })->get()->keyBy(function ($item) {
+            return $item->tanggal->format('m-d');
+        });
+
+        // Ambil absensi user saja
+        $absensiBulan = Absen::where('user_id', $user->id)
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->orderBy('tanggal')
+            ->get()
+            ->keyBy(function ($item) {
+                return $item->tanggal->format('Y-m-d');
+            });
+
+        // Hitung statistik per hari
+        $kalenderData = [];
+        $hariLiburUser = $user->hari_libur ?? [];
+        
+        // Summary statistics
+        $totalHadir = 0;
+        $totalTelat = 0;
+        $totalIzin = 0;
+        $totalLibur = 0;
+        $totalMenitKerja = 0;
+
+        for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+            $tanggal = $date->format('Y-m-d');
+            $monthDay = $date->format('m-d');
+            $absenHari = $absensiBulan->get($tanggal);
+
+            // Check if this day is a public holiday
+            $publicHoliday = $publicHolidays->get($monthDay);
+            
+            // Check if this is user's personal holiday
+            $isPersonalHoliday = in_array($date->isoWeekday(), $hariLiburUser);
+
+            $status = null;
+            $statusColor = 'gray';
+            $statusIcon = '';
+            
+            if ($absenHari) {
+                if ($absenHari->libur) {
+                    $status = 'libur';
+                    $statusColor = 'blue';
+                    $statusIcon = '🌴';
+                    $totalLibur++;
+                } elseif ($absenHari->izin) {
+                    $status = 'izin';
+                    $statusColor = 'amber';
+                    $statusIcon = '📝';
+                    $totalIzin++;
+                } elseif ($absenHari->tidak_hadir) {
+                    $status = 'tidak_hadir';
+                    $statusColor = 'gray';
+                    $statusIcon = '✗';
+                } elseif ($absenHari->telat) {
+                    $status = 'telat';
+                    $statusColor = 'red';
+                    $statusIcon = '⚠';
+                    $totalTelat++;
+                    $totalHadir++;
+                    $totalMenitKerja += $absenHari->menit_kerja ?? 0;
+                } elseif ($absenHari->jam_masuk) {
+                    $status = 'hadir';
+                    $statusColor = 'green';
+                    $statusIcon = '✓';
+                    $totalHadir++;
+                    $totalMenitKerja += $absenHari->menit_kerja ?? 0;
+                }
+            }
+
+            $kalenderData[$tanggal] = [
+                'tanggal' => $date->copy(),
+                'absen' => $absenHari,
+                'status' => $status,
+                'status_color' => $statusColor,
+                'status_icon' => $statusIcon,
+                'public_holiday' => $publicHoliday,
+                'is_personal_holiday' => $isPersonalHoliday,
+            ];
+        }
+
+        // Calculate total working hours
+        $totalJam = floor($totalMenitKerja / 60);
+        $sisaMenit = $totalMenitKerja % 60;
+
+        return view('riwayat-kalender', compact(
+            'kalenderData', 
+            'bulan', 
+            'tahun',
+            'totalHadir',
+            'totalTelat',
+            'totalIzin',
+            'totalLibur',
+            'totalJam',
+            'sisaMenit'
+        ));
+    }
+
     public function store(Request $request)
     {
         $user = Auth::user();

@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/absen', [AbsenController::class, 'index'])->name('absen.index');
         Route::post('/absen', [AbsenController::class, 'store'])->name('absen.store');
         Route::get('/riwayat', [AbsenController::class, 'riwayat'])->name('absen.riwayat');
+        Route::get('/riwayat-kalender', [AbsenController::class, 'riwayatKalender'])->name('absen.riwayatKalender');
         Route::get('/penggajian-riwayat', [PenggajianController::class, 'riwayatPegawai'])->name('penggajian.riwayat');
 
         // Lembur Pegawai
