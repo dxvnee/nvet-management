@@ -3,27 +3,64 @@
     <x-slot name="subtle">Halaman absensi karyawan</x-slot>
 
     <div class="space-y-6">
+        {{-- Welcome Section --}}
+        <div class="relative overflow-hidden bg-gradient-to-br from-primary via-primaryDark to-primary rounded-3xl shadow-2xl p-6 md:p-8 text-white animate-slide-up">
+            {{-- Background Pattern --}}
+            <div class="absolute inset-0 opacity-10">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-white rounded-full"></div>
+                <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-white rounded-full"></div>
+                <div class="absolute top-1/2 left-1/3 w-20 h-20 bg-white rounded-full"></div>
+            </div>
+
+            <div class="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
+                        <svg class="w-8 h-8 md:w-10 md:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl md:text-2xl font-bold mb-1">Absensi Kehadiran</h2>
+                        <p class="text-white/80 text-sm md:text-base flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <span id="current-datetime"></span>
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right bg-white/10 backdrop-blur-sm rounded-2xl px-4 md:px-6 py-3">
+                        <p class="text-white/70 text-xs uppercase tracking-wider mb-1">Waktu Sekarang</p>
+                        <p class="text-2xl md:text-3xl font-bold font-mono" x-data="{ time: '' }"
+                            x-init="setInterval(() => time = new Date().toLocaleTimeString('id-ID'), 1000)"
+                            x-text="time"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Status Absen Hari Ini -->
-        <div class="bg-white rounded-2xl shadow-xl p-6 animate-slide-up">
+        <div class="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 animate-slide-up-delay-1">
             <div class="flex items-center gap-3 mb-6">
                 <div class="p-3 bg-gradient-to-br from-primary to-primaryDark rounded-xl shadow-lg">
                     <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
                 <div>
                     <h2 class="text-xl font-bold text-gray-800">Status Absensi Hari Ini</h2>
-                    <p class="text-gray-500 text-sm" id="current-datetime"></p>
+                    <p class="text-gray-500 text-sm">Pantau kehadiran Anda</p>
                 </div>
             </div>
 
             <!-- Status Cards -->
             @if($liburOrNot)
                 <!-- Status Hari Libur - Full Width -->
-                <div class="w-full p-6 rounded-xl border-2 bg-blue-50 border-blue-300 mb-6">
+                <div class="w-full p-6 rounded-2xl border-2 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 mb-6 shadow-sm">
                     <div class="flex items-center gap-4">
-                        <div class="p-3 rounded-lg bg-blue-500">
+                        <div class="p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
                             <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
@@ -36,7 +73,12 @@
                             </p>
                             <p class="text-sm text-blue-600 mt-1">
                                 @if($sudahHadir)
-                                    Anda sedang lembur hari libur. Masuk: {{ $sudahHadir->jam_masuk->format('H:i') }}
+                                    <span class="inline-flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        Anda sedang lembur hari libur. Masuk: {{ $sudahHadir->jam_masuk->format('H:i') }}
+                                    </span>
                                 @else
                                     Hari ini adalah hari libur{{ isset($namaHariLibur) && $namaHariLibur ? ' (' . $namaHariLibur . ')' : '' }}. Klik tombol di bawah jika ingin lembur.
                                 @endif
@@ -46,10 +88,10 @@
                 </div>
 
                 <!-- Lokasi Status untuk Hari Libur -->
-                <div id="location-status" class="mb-6 p-4 rounded-xl bg-gray-50 border border-gray-200">
+                <div id="location-status" class="mb-6 p-4 rounded-2xl bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 shadow-sm">
                     <div class="flex items-center gap-3">
                         <div class="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full"></div>
-                        <span class="text-gray-600">Mengambil lokasi...</span>
+                        <span class="text-gray-600 font-medium">Mengambil lokasi...</span>
                     </div>
                 </div>
 
@@ -57,29 +99,33 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Tombol Masuk Lembur -->
                     <button type="button" onclick="openLemburLiburModal('hadir')" {{ $sudahHadir ? 'disabled' : '' }}
-                        class="w-full py-4 px-6 rounded-xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-2
-                        {{ $sudahHadir ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl transform hover:scale-105' }}">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        {{ $sudahHadir ? 'Sudah Masuk Lembur' : 'Masuk Lembur Hari Libur' }}
+                        class="group w-full py-5 px-6 rounded-2xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-3
+                        {{ $sudahHadir ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]' }}">
+                        <div class="p-2 bg-white/20 rounded-xl group-hover:scale-110 transition-transform">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <span>{{ $sudahHadir ? 'Sudah Masuk Lembur' : 'Masuk Lembur Hari Libur' }}</span>
                     </button>
 
                     <!-- Tombol Pulang Lembur -->
                     <button type="button" onclick="openCameraModal('pulang')" {{ !$sudahHadir || $sudahPulang ? 'disabled' : '' }}
-                        class="w-full py-4 px-6 rounded-xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-2
-                        {{ !$sudahHadir || $sudahPulang ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:scale-105' }}">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                        </svg>
-                        {{ $sudahPulang ? 'Sudah Pulang' : (!$sudahHadir ? 'Masuk Lembur Dulu' : 'Pulang Lembur') }}
+                        class="group w-full py-5 px-6 rounded-2xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-3
+                        {{ !$sudahHadir || $sudahPulang ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]' }}">
+                        <div class="p-2 bg-white/20 rounded-xl group-hover:scale-110 transition-transform">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                        </div>
+                        <span>{{ $sudahPulang ? 'Sudah Pulang' : (!$sudahHadir ? 'Masuk Lembur Dulu' : 'Pulang Lembur') }}</span>
                     </button>
                 </div>
             @elseif($sudahIzin)
                 <!-- Status Izin - Full Width -->
-                <div class="w-full p-6 rounded-xl border-2 bg-yellow-50 border-yellow-300 mb-6">
+                <div class="w-full p-6 rounded-2xl border-2 bg-gradient-to-br from-amber-50 to-yellow-50 border-amber-200 mb-6 shadow-sm">
                     <div class="flex items-center gap-4">
-                        <div class="p-3 rounded-lg bg-yellow-500">
+                        <div class="p-4 rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-600 shadow-lg">
                             <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
@@ -87,72 +133,88 @@
                             </svg>
                         </div>
                         <div class="flex-1">
-                            <p class="text-xl font-bold text-yellow-700">Sedang Izin</p>
-                            <p class="text-sm text-yellow-600 mt-1">
+                            <p class="text-xl font-bold text-amber-700">Sedang Izin</p>
+                            <p class="text-sm text-amber-600 mt-1 flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
                                 Tanggal: {{ $sudahIzin->tanggal->format('d M Y') }}
                             </p>
                             @if($sudahIzin->izin_keterangan)
-                                <p class="text-sm text-yellow-600 mt-2 italic">
-                                    "{{ $sudahIzin->izin_keterangan }}"
-                                </p>
+                                <div class="mt-3 p-3 bg-amber-100 rounded-xl">
+                                    <p class="text-sm text-amber-800 italic flex items-start gap-2">
+                                        <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                                        </svg>
+                                        "{{ $sudahIzin->izin_keterangan }}"
+                                    </p>
+                                </div>
                             @endif
                         </div>
                     </div>
                 </div>
             @else
                 <!-- Status Cards Normal -->
-                <div class="flex gap-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <!-- Hadir -->
-                    <div
-                        class="flex-1 p-4 rounded-xl border-2 {{ $sudahHadir ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-200' }}">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2 rounded-lg {{ $sudahHadir ? 'bg-green-500' : 'bg-gray-300' }}">
-                                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="group p-5 rounded-2xl border-2 transition-all duration-300 {{ $sudahHadir ? 'bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-200 shadow-sm' : 'bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200' }}">
+                        <div class="flex items-center gap-4">
+                            <div class="p-3 rounded-xl shadow-lg transition-transform group-hover:scale-105 {{ $sudahHadir ? 'bg-gradient-to-br from-emerald-500 to-green-600' : 'bg-gray-300' }}">
+                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M5 13l4 4L19 7"></path>
                                 </svg>
                             </div>
-                            <div>
-                                <p class="font-semibold {{ $sudahHadir ? 'text-green-700' : 'text-gray-500' }}">
-                                    Hadir
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <p class="font-bold text-lg {{ $sudahHadir ? 'text-emerald-700' : 'text-gray-500' }}">
+                                        Hadir
+                                    </p>
                                     @if($sudahHadir && $sudahHadir->shift_number)
-                                        <span
-                                            class="ml-1 text-xs px-2 py-0.5 rounded-full {{ (int) $sudahHadir->shift_number === 1 ? 'bg-blue-500 text-white' : 'bg-orange-500 text-white' }}">
+                                        <span class="text-xs px-2.5 py-1 rounded-full font-bold shadow-sm
+                                            {{ (int) $sudahHadir->shift_number === 1 ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white' }}">
                                             Shift {{ $sudahHadir->shift_number }}
                                         </span>
                                     @endif
-                                </p>
+                                </div>
                                 @if($sudahHadir)
-                                    <p class="text-sm text-green-600">
-                                        {{ $sudahHadir->jam_masuk->format('H:i') }}
+                                    <p class="text-sm text-emerald-600 mt-1 flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <span class="font-semibold">{{ $sudahHadir->jam_masuk->format('H:i') }}</span>
                                         @if($sudahHadir->telat)
-                                            <span class="text-red-500 font-bold">(TELAT {{ $sudahHadir->menit_telat }} menit)</span>
+                                            <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-600">TELAT {{ $sudahHadir->menit_telat }}m</span>
                                         @endif
                                     </p>
                                 @else
-                                    <p class="text-sm text-gray-400">Belum absen</p>
+                                    <p class="text-sm text-gray-400 mt-1">Belum absen</p>
                                 @endif
                             </div>
                         </div>
                     </div>
 
                     <!-- Pulang -->
-                    <div
-                        class="flex-1 p-4 rounded-xl border-2 {{ $sudahPulang ? 'bg-blue-50 border-blue-300' : 'bg-gray-50 border-gray-200' }}">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2 rounded-lg {{ $sudahPulang ? 'bg-blue-500' : 'bg-gray-300' }}">
-                                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="group p-5 rounded-2xl border-2 transition-all duration-300 {{ $sudahPulang ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 shadow-sm' : 'bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200' }}">
+                        <div class="flex items-center gap-4">
+                            <div class="p-3 rounded-xl shadow-lg transition-transform group-hover:scale-105 {{ $sudahPulang ? 'bg-gradient-to-br from-blue-500 to-indigo-600' : 'bg-gray-300' }}">
+                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
                                     </path>
                                 </svg>
                             </div>
-                            <div>
-                                <p class="font-semibold {{ $sudahPulang ? 'text-blue-700' : 'text-gray-500' }}">Pulang</p>
+                            <div class="flex-1">
+                                <p class="font-bold text-lg {{ $sudahPulang ? 'text-blue-700' : 'text-gray-500' }}">Pulang</p>
                                 @if($sudahPulang)
-                                    <p class="text-sm text-blue-600">{{ $sudahPulang->jam_pulang->format('H:i') }}</p>
+                                    <p class="text-sm text-blue-600 mt-1 flex items-center gap-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <span class="font-semibold">{{ $sudahPulang->jam_pulang->format('H:i') }}</span>
+                                    </p>
                                 @else
-                                    <p class="text-sm text-gray-400">Belum pulang</p>
+                                    <p class="text-sm text-gray-400 mt-1">Belum pulang</p>
                                 @endif
                             </div>
                         </div>
@@ -162,9 +224,9 @@
 
             <!-- Info Hari Khusus -->
             @if(isset($hariKhususInfo) && $hariKhususInfo)
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 mb-6 border border-blue-200">
+            <div class="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 rounded-2xl p-4 mb-6 border border-blue-200 shadow-sm">
                 <div class="flex items-center gap-3">
-                    <div class="p-2 bg-blue-500 rounded-lg">
+                    <div class="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
                         <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -172,7 +234,10 @@
                     </div>
                     <div>
                         <p class="text-sm font-bold text-blue-700">{{ $hariKhususInfo->nama }}</p>
-                        <p class="text-xs text-blue-600">
+                        <p class="text-xs text-blue-600 flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
                             Hari khusus - tetap masuk kerja seperti biasa
                             @if($hariKhususInfo->jam_masuk && $hariKhususInfo->jam_keluar)
                                 ({{ \Carbon\Carbon::parse($hariKhususInfo->jam_masuk)->format('H:i') }} - {{ \Carbon\Carbon::parse($hariKhususInfo->jam_keluar)->format('H:i') }})
@@ -185,12 +250,14 @@
 
             <!-- Info Jam Kerja -->
             @if(!$liburOrNot)
-            <div class="bg-primaryUltraLight rounded-xl p-4 mb-6">
-                <div class="flex items-center gap-2 text-primary">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+            <div class="bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl p-4 mb-6 border border-primary/20 shadow-sm">
+                <div class="flex items-center gap-3 text-primary">
+                    <div class="p-2 bg-primary/20 rounded-xl">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
                     @php
                         $user = auth()->user();
                         if ($user->is_shift && $user->shift_partner_id) {
@@ -207,24 +274,54 @@
                     @endphp
 
                     @if($user->is_shift && $user->shift_partner_id)
-                        <span class="text-sm font-medium">
-                            <span
-                                class="inline-flex items-center px-2 py-0.5 rounded bg-blue-100 text-blue-800 mr-2">SHIFT</span>
-                            Shift 1: {{ $jamMasuk1 }} - {{ $jamKeluar1 }} |
-                            Shift 2: {{ $jamMasuk2 }} - {{ $jamKeluar2 }} |
-                            Partner: {{ $partnerName }}
-                        </span>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-100 text-blue-800 shadow-sm">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    SHIFT
+                                </span>
+                            </div>
+                            <p class="text-sm font-medium mt-1">
+                                Shift 1: {{ $jamMasuk1 }} - {{ $jamKeluar1 }} |
+                                Shift 2: {{ $jamMasuk2 }} - {{ $jamKeluar2 }} |
+                                Partner: {{ $partnerName }}
+                            </p>
+                        </div>
                     @else
-                        <span class="text-sm font-medium">Jam masuk: {{ $jamMasuk }} WIB | Jam pulang: {{ $jamKeluar }} WIB
-                            | Radius: 20 meter</span>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium">
+                                <span class="inline-flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Jam masuk: <strong>{{ $jamMasuk }} WIB</strong>
+                                </span>
+                                <span class="mx-2">|</span>
+                                <span class="inline-flex items-center gap-1">
+                                    Jam pulang: <strong>{{ $jamKeluar }} WIB</strong>
+                                </span>
+                                <span class="mx-2">|</span>
+                                <span class="inline-flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    Radius: <strong>20 meter</strong>
+                                </span>
+                            </p>
+                        </div>
                     @endif
                 </div>
 
                 @if($sudahHadir && $sudahHadir->shift_number)
-                    <div class="mt-2 flex items-center gap-2">
-                        <span
-                            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold
-                                                {{ (int) $sudahHadir->shift_number === 1 ? 'bg-blue-500 text-white' : 'bg-orange-500 text-white' }}">
+                    <div class="mt-3 pt-3 border-t border-primary/20 flex items-center gap-2">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-bold shadow-sm
+                            {{ (int) $sudahHadir->shift_number === 1 ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white' }}">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
                             Anda Shift {{ $sudahHadir->shift_number }}
                         </span>
                         @php
@@ -232,7 +329,7 @@
                                 ? \Carbon\Carbon::parse($user->shift1_jam_keluar)->format('H:i')
                                 : \Carbon\Carbon::parse($user->shift2_jam_keluar)->format('H:i');
                         @endphp
-                        <span class="text-sm text-gray-600">Bisa pulang setelah {{ $shiftJamKeluar }} WIB</span>
+                        <span class="text-sm text-gray-600">Bisa pulang setelah <strong>{{ $shiftJamKeluar }} WIB</strong></span>
                     </div>
                 @endif
             </div>
@@ -240,18 +337,17 @@
 
             <!-- Total Jam Kerja Hari Ini -->
             @if($sudahHadir && !$sudahIzin && !$liburOrNot)
-                <div
-                    class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 mb-6 border border-blue-200 animate-slide-up-delay-1">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 bg-blue-500 rounded-lg">
-                            <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="bg-gradient-to-r from-indigo-50 via-blue-50 to-purple-50 rounded-2xl p-5 mb-6 border border-blue-200 shadow-sm animate-slide-up-delay-1">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-blue-700">Total Jam Kerja Hari Ini</p>
-                            <p class="text-lg font-bold text-blue-800" id="working-hours">{{ $totalJamKerjaText }}</p>
+                            <p class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent" id="working-hours">{{ $totalJamKerjaText }}</p>
                         </div>
                     </div>
                 </div>
@@ -260,10 +356,10 @@
             <!-- Lokasi Status & Absen Buttons (tidak ditampilkan pada hari libur) -->
             @if(!$liburOrNot)
             <!-- Lokasi Status -->
-            <div id="location-status" class="mb-6 p-4 rounded-xl bg-gray-50 border border-gray-200">
+            <div id="location-status" class="mb-6 p-4 rounded-2xl bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 shadow-sm">
                 <div class="flex items-center gap-3">
                     <div class="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full"></div>
-                    <span class="text-gray-600">Mengambil lokasi...</span>
+                    <span class="text-gray-600 font-medium">Mengambil lokasi...</span>
                 </div>
             </div>
 
@@ -271,24 +367,28 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Tombol Hadir -->
                 <button type="button" onclick="openCameraModal('hadir')" {{ $sudahHadir || $sudahIzin || $liburOrNot ? 'disabled' : '' }}
-                    class="w-full py-4 px-6 rounded-xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-2
-                    {{ $sudahHadir || $sudahIzin || $liburOrNot ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg hover:shadow-xl transform hover:scale-105' }}">
-                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
-                        </path>
-                    </svg>
-                    {{ $liburOrNot ? 'Hari Libur' : ($sudahHadir ? 'Sudah Hadir' : ($sudahIzin ? 'Sedang Izin' : 'Absen Hadir')) }}
+                    class="group w-full py-3 px-6 rounded-2xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-3
+                    {{ $sudahHadir || $sudahIzin || $liburOrNot ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]' }}">
+                    <div class="p-2 bg-white/20 rounded-xl group-hover:scale-110 transition-transform">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <span>{{ $liburOrNot ? 'Hari Libur' : ($sudahHadir ? 'Sudah Hadir' : ($sudahIzin ? 'Sedang Izin' : 'Absen Hadir')) }}</span>
                 </button>
 
                 <!-- Tombol Izin -->
                 <button type="button" onclick="openCameraModal('izin')" {{ ($sudahIzin && !$sudahHadir) || $sudahPulang || $liburOrNot ? 'disabled' : '' }}
-                    class="w-full py-4 px-6 rounded-xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-2
-                    {{ ($sudahIzin && !$sudahHadir) || $sudahPulang || $liburOrNot ? 'bg-gray-300 cursor-not-allowed' : ($sudahHadir ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl transform hover:scale-105' : 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 shadow-lg hover:shadow-xl transform hover:scale-105') }}">
-                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-                        </path>
-                    </svg>
+                    class="group w-full py-3 px-6 rounded-2xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-3
+                    {{ ($sudahIzin && !$sudahHadir) || $sudahPulang || $liburOrNot ? 'bg-gray-300 cursor-not-allowed' : ($sudahHadir ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]' : 'bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]') }}">
+                    <div class="p-2 bg-white/20 rounded-xl group-hover:scale-110 transition-transform">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                            </path>
+                        </svg>
+                    </div>
+                    <span>
                     @if($liburOrNot)
                         Hari Libur
                     @elseif($sudahIzin && $sudahHadir)
@@ -302,17 +402,21 @@
                     @else
                         Izin Tidak Masuk
                     @endif
+                    </span>
                 </button>
 
                 <!-- Tombol Pulang -->
                 <button type="button" onclick="openCameraModal('pulang')" {{ $sudahPulang || !$sudahHadir || $sudahIzin || $liburOrNot ? 'disabled' : '' }}
-                    class="w-full py-4 px-6 rounded-xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-2
-                    {{ $sudahPulang || !$sudahHadir || $sudahIzin || $liburOrNot ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:scale-105' }}">
-                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-                        </path>
-                    </svg>
+                    class="group w-full py-3 px-6 rounded-2xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-3
+                    {{ $sudahPulang || !$sudahHadir || $sudahIzin || $liburOrNot ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]' }}">
+                    <div class="p-2 bg-white/20 rounded-xl group-hover:scale-110 transition-transform">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                            </path>
+                        </svg>
+                    </div>
+                    <span>
                     @if($liburOrNot)
                         Hari Libur
                     @elseif($sudahPulang)
@@ -336,6 +440,7 @@
                         @endphp
                         Absen Pulang (≥{{ $jamPulangText }})
                     @endif
+                    </span>
                 </button>
             </div>
             @endif
@@ -345,12 +450,20 @@
 
     <!-- Camera Modal -->
     <div id="camera-modal"
-        class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg transform transition-all">
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg transform transition-all animate-slide-up">
             <div class="p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 id="camera-title" class="text-xl font-bold text-gray-800">Ambil Foto</h3>
-                    <button onclick="closeCameraModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-gradient-to-br from-primary to-primaryDark rounded-xl shadow-lg">
+                            <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 id="camera-title" class="text-xl font-bold text-gray-800">Ambil Foto</h3>
+                    </div>
+                    <button onclick="closeCameraModal()" class="p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M6 18L18 6M6 6l12 12"></path>
@@ -359,7 +472,7 @@
                 </div>
 
                 <!-- Camera Preview -->
-                <div class="relative bg-black rounded-xl overflow-hidden mb-4">
+                <div class="relative bg-gradient-to-br from-gray-900 to-black rounded-2xl overflow-hidden mb-4 shadow-inner">
                     <video id="camera-preview" autoplay playsinline class="w-full h-64 object-cover transform scale-x-[-1]"></video>
                     <canvas id="camera-canvas" class="hidden"></canvas>
                     <img id="photo-preview" class="w-full h-64 object-cover hidden">
@@ -367,10 +480,15 @@
 
                 <!-- Captured Photo Preview -->
                 <div id="photo-result" class="hidden mb-4">
-                    <p class="text-sm text-gray-600 mb-2">Foto yang diambil:</p>
+                    <p class="text-sm font-medium text-gray-600 mb-2 flex items-center gap-1">
+                        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Foto yang diambil:
+                    </p>
                     <div class="relative">
-                        <img id="captured-photo" class="w-full h-48 object-cover rounded-xl border-2 border-green-500">
-                        <div class="absolute top-2 right-2 bg-green-500 text-white p-1 rounded-full">
+                        <img id="captured-photo" class="w-full h-48 object-cover rounded-2xl border-2 border-emerald-500 shadow-lg">
+                        <div class="absolute top-3 right-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white p-2 rounded-xl shadow-lg">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M5 13l4 4L19 7"></path>
@@ -382,7 +500,7 @@
                 <!-- Camera Controls -->
                 <div class="flex gap-3">
                     <button type="button" id="btn-capture" onclick="capturePhoto()"
-                        class="flex-1 py-3 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-primary to-primaryDark hover:from-primaryDark hover:to-primaryExtraDark transition-all shadow-lg flex items-center justify-center gap-2">
+                        class="flex-1 py-3 px-6 rounded-2xl font-bold text-white bg-gradient-to-r from-primary to-primaryDark hover:from-primaryDark hover:to-primaryExtraDark transition-all shadow-lg flex items-center justify-center gap-2">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
@@ -393,7 +511,7 @@
                         Ambil Foto
                     </button>
                     <button type="button" id="btn-retake" onclick="retakePhoto()"
-                        class="hidden py-3 px-6 rounded-xl font-bold text-gray-700 bg-gray-200 hover:bg-gray-300 transition-all flex items-center justify-center gap-2">
+                        class="hidden py-3 px-6 rounded-2xl font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-200 transition-all flex items-center justify-center gap-2">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
@@ -418,7 +536,7 @@
 
                 <!-- Submit Button -->
                 <button type="button" id="btn-submit" onclick="submitWithPhoto()"
-                    class=" w-full mt-3 py-3 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all shadow-lg flex items-center justify-center gap-2">
+                    class="w-full mt-4 py-4 px-6 rounded-2xl font-bold text-white bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 transform hover:scale-[1.01]">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
@@ -427,18 +545,21 @@
 
                 <!-- Keterangan for Izin -->
                 <div id="izin-keterangan-wrapper" class="hidden mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <label class="text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+                        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                        </svg>
                         <span id="izin-label">Alasan Izin</span>
                     </label>
                     <textarea id="izin-keterangan-input" rows="3"
-                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                        class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
                         placeholder="Masukkan alasan..."></textarea>
                 </div>
 
                 <!-- Alasan Absen Diluar Lokasi -->
                 <div id="diluar-lokasi-wrapper" class="hidden mt-4">
-                    <div class="p-4 bg-yellow-50 border border-yellow-300 rounded-xl mb-3">
-                        <div class="flex items-center gap-2 text-yellow-700">
+                    <div class="p-4 bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-2xl mb-3 shadow-sm">
+                        <div class="flex items-center gap-2 text-amber-700">
                             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
@@ -446,11 +567,14 @@
                         </div>
                         <p class="text-sm text-yellow-600 mt-1" id="diluar-lokasi-jarak"></p>
                     </div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Alasan Absen Diluar Lokasi <span class="text-red-500">*</span>
+                    <label class="text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+                        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        </svg>
+                        Alasan Absen Diluar Lokasi <span class="text-rose-500">*</span>
                     </label>
                     <textarea id="diluar-lokasi-input" rows="3"
-                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                        class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
                         placeholder="Contoh: Sedang visit ke klien, meeting di luar kantor, dinas luar, dll..."></textarea>
                 </div>
             </div>
@@ -459,11 +583,11 @@
 
     <!-- Lembur Confirmation Modal -->
     <div id="lembur-modal"
-        class="fixed inset-0 bg-black bg-opacity-75 z-[60] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all">
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md transform transition-all animate-slide-up">
             <div class="p-6">
                 <div class="flex items-center justify-center mb-4">
-                    <div class="p-4 bg-orange-100 rounded-full">
+                    <div class="p-4 bg-gradient-to-br from-orange-100 to-amber-100 rounded-2xl shadow-lg">
                         <svg class="h-12 w-12 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -481,26 +605,31 @@
 
                 <!-- Keterangan Lembur -->
                 <div id="lembur-keterangan-wrapper" class="mb-6 hidden">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Keterangan Lembur</label>
+                    <label class="text-sm font-medium text-gray-700 mb-2 flex items-center gap-1">
+                        <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                        </svg>
+                        Keterangan Lembur
+                    </label>
                     <textarea id="lembur-keterangan-input" rows="2"
-                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                        class="w-full px-4 py-3 rounded-2xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
                         placeholder="Masukkan keterangan lembur (opsional)..."></textarea>
                 </div>
 
                 <div class="flex gap-3">
                     <button type="button" onclick="confirmLembur(false)"
-                        class="flex-1 py-3 px-6 rounded-xl font-bold text-gray-700 bg-gray-200 hover:bg-gray-300 transition-all">
+                        class="flex-1 py-3 px-6 rounded-2xl font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-200 transition-all">
                         Bukan Lembur
                     </button>
                     <button type="button" onclick="showLemburKeterangan()"
-                        class="flex-1 py-3 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg">
+                        class="flex-1 py-3 px-6 rounded-2xl font-bold text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg hover:shadow-xl">
                         Ya, Lembur
                     </button>
                 </div>
 
                 <!-- Submit Lembur Button (hidden initially) -->
                 <button type="button" id="btn-submit-lembur" onclick="confirmLembur(true)"
-                    class="hidden w-full mt-3 py-3 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transition-all shadow-lg">
+                    class="hidden w-full mt-4 py-4 px-6 rounded-2xl font-bold text-white bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 transition-all shadow-lg hover:shadow-xl">
                     Kirim dengan Lembur
                 </button>
             </div>
@@ -509,11 +638,11 @@
 
     <!-- Lembur Hari Libur Confirmation Modal -->
     <div id="lembur-libur-modal"
-        class="fixed inset-0 bg-black bg-opacity-75 z-[60] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all">
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md transform transition-all animate-slide-up">
             <div class="p-6">
                 <div class="flex items-center justify-center mb-4">
-                    <div class="p-4 bg-blue-100 rounded-full">
+                    <div class="p-4 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl shadow-lg">
                         <svg class="h-12 w-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
@@ -530,19 +659,30 @@
 
                 <!-- Keterangan Lembur Hari Libur -->
                 <div id="lembur-libur-keterangan-wrapper" class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Keterangan Lembur <span class="text-red-500">*</span></label>
-                    <textarea id="lembur-libur-keterangan-input" rows="2"
-                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                        placeholder="Masukkan keterangan lembur..."></textarea>
+                    <label class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        Keterangan Lembur <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="lembur-libur-keterangan-input" rows="3"
+                        class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-orange-400 focus:ring-4 focus:ring-orange-100 transition-all resize-none text-gray-700 placeholder-gray-400"
+                        placeholder="Jelaskan alasan dan detail pekerjaan lembur di hari libur..."></textarea>
                 </div>
 
                 <div class="flex gap-3">
                     <button type="button" onclick="closeLemburLiburModal()"
-                        class="flex-1 py-3 px-6 rounded-xl font-bold text-gray-700 bg-gray-200 hover:bg-gray-300 transition-all">
+                        class="group flex-1 py-3.5 px-6 rounded-2xl font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-all duration-300 flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
                         Batal
                     </button>
                     <button type="button" onclick="confirmLemburLibur()"
-                        class="flex-1 py-3 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all shadow-lg">
+                        class="group flex-1 py-3.5 px-6 rounded-2xl font-bold text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02] flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
                         Ya, Lembur
                     </button>
                 </div>
