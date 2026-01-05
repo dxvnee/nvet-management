@@ -118,6 +118,29 @@
                     </div>
                 </div>
 
+                {{-- Shift (Only for shift employees) --}}
+                @if($absen->user->is_shift && $absen->user->shift_partner_id)
+                <div class="border-t pt-6">
+                    <h4 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Shift
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Shift</label>
+                            <select name="shift_number" id="shift_number"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
+                                <option value="">-- Pilih Shift --</option>
+                                <option value="1" {{ $absen->shift_number == 1 ? 'selected' : '' }}>Shift 1</option>
+                                <option value="2" {{ $absen->shift_number == 2 ? 'selected' : '' }}>Shift 2</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
                 {{-- Izin --}}
                 <div class="border-t pt-6">
                     <h4 class="text-lg font-semibold mb-4 flex items-center gap-2">

@@ -57,6 +57,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/absensi-kalender', [AbsenController::class, 'kalender'])->name('absen.kalender');
         Route::get('/absensi-kalender/{tanggal}', [AbsenController::class, 'detailHari'])->name('absen.detailHari');
         Route::get('/absensi/user', [AbsenController::class, 'absensiUser'])->name('absen.user');
+        Route::get('/absen/create/{tanggal}/{user}', [AbsenController::class, 'create'])->name('absen.create');
+        Route::post('/absen/manual', [AbsenController::class, 'storeManual'])->name('absen.storeManual');
         Route::get('/absen/{absen}/edit', [AbsenController::class, 'edit'])->name('absen.edit');
         Route::patch('/absen/{absen}', [AbsenController::class, 'update'])->name('absen.update');
         Route::delete('/absen/{absen}', [AbsenController::class, 'destroy'])->name('absen.destroy');

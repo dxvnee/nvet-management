@@ -831,6 +831,117 @@ class AbsenController extends Controller
         return view('absensi.edit', compact('absen'));
     }
 
+    public function create($tanggal, User $user)
+    {
+        $date = Carbon::parse($tanggal);
+
+        // Check if absen already exists for this user on this date
+        $existingAbsen = Absen::where('user_id', $user->id)
+            ->whereDate('tanggal', $date)
+            ->first();
+
+        if ($existingAbsen) {
+            return redirect()->route('absen.edit', $existingAbsen)
+                ->with('info', 'Data absensi sudah ada untuk tanggal ini. Menampilkan form edit.');
+        }
+
+        return view('absensi.create', compact('user', 'tanggal'));
+    }
+
+    public function storeManual(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'tanggal' => 'required|date',
+            'jam_masuk' => 'nullable|string',
+            'jam_pulang' => 'nullable|string',
+            'izin' => 'nullable',
+            'izin_keterangan' => 'nullable|string|max:255',
+            'telat' => 'nullable',
+            'menit_telat' => 'nullable|integer|min:0',
+            'tidak_hadir' => 'nullable',
+            'libur' => 'nullable',
+            'shift_number' => 'nullable|integer|in:1,2',
+            'lat_masuk' => 'nullable|numeric',
+            'lng_masuk' => 'nullable|numeric',
+            'lat_pulang' => 'nullable|numeric',
+            'lng_pulang' => 'nullable|numeric',
+        ]);
+
+        $tanggal = Carbon::parse($request->tanggal);
+
+        // Check if absen already exists
+        $existingAbsen = Absen::where('user_id', $request->user_id)
+            ->whereDate('tanggal', $tanggal)
+            ->first();
+
+        if ($existingAbsen) {
+            return redirect()->route('absen.edit', $existingAbsen)
+                ->with('error', 'Data absensi sudah ada untuk tanggal ini.');
+        }
+
+        $data = [
+            'user_id' => $request->user_id,
+            'tanggal' => $tanggal,
+            'izin' => $request->has('izin') ? (bool) $request->izin : false,
+            'izin_keterangan' => $request->izin_keterangan,
+            'telat' => $request->has('telat') ? (bool) $request->telat : false,
+            'menit_telat' => (int) ($request->menit_telat ?? 0),
+            'tidak_hadir' => $request->has('tidak_hadir') ? (bool) $request->tidak_hadir : false,
+            'libur' => $request->has('libur') ? (bool) $request->libur : false,
+        ];
+
+        // Handle shift number if provided
+        if ($request->filled('shift_number')) {
+            $data['shift_number'] = (int) $request->shift_number;
+        }
+
+        // Parse jam masuk safely
+        if ($request->filled('jam_masuk')) {
+            try {
+                $data['jam_masuk'] = Carbon::parse($request->jam_masuk)->setDateFrom($tanggal);
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Format jam masuk tidak valid');
+            }
+        }
+
+        // Parse jam pulang safely
+        if ($request->filled('jam_pulang')) {
+            try {
+                $data['jam_pulang'] = Carbon::parse($request->jam_pulang)->setDateFrom($tanggal);
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Format jam pulang tidak valid');
+            }
+        }
+
+        // Handle location data
+        if ($request->filled('lat_masuk')) {
+            $data['lat_masuk'] = $request->lat_masuk;
+        }
+        if ($request->filled('lng_masuk')) {
+            $data['lng_masuk'] = $request->lng_masuk;
+        }
+        if ($request->filled('lat_pulang')) {
+            $data['lat_pulang'] = $request->lat_pulang;
+        }
+        if ($request->filled('lng_pulang')) {
+            $data['lng_pulang'] = $request->lng_pulang;
+        }
+
+        // Calculate menit_kerja if both times exist
+        if (isset($data['jam_masuk']) && isset($data['jam_pulang'])) {
+            $data['menit_kerja'] = $data['jam_masuk']->diffInMinutes($data['jam_pulang'], false);
+        }
+
+        // Set status based on telat
+        $data['status'] = $data['telat'] ? 'telat' : 'tepat_waktu';
+
+        Absen::create($data);
+
+        return redirect()->route('absen.detailHari', $tanggal->format('Y-m-d'))
+            ->with('success', 'Absensi manual berhasil ditambahkan');
+    }
+
     public function update(Request $request, Absen $absen)
     {
         $request->validate([
@@ -843,6 +954,7 @@ class AbsenController extends Controller
             'tidak_hadir' => 'nullable',
             'libur' => 'nullable',
             'status' => 'nullable|string|in:tepat_waktu,telat',
+            'shift_number' => 'nullable|integer|in:1,2',
             'lat_masuk' => 'nullable|numeric',
             'lng_masuk' => 'nullable|numeric',
             'lat_pulang' => 'nullable|numeric',
@@ -899,6 +1011,11 @@ class AbsenController extends Controller
         // Handle status
         if ($request->filled('status')) {
             $data['status'] = $request->status;
+        }
+
+        // Handle shift number
+        if ($request->has('shift_number')) {
+            $data['shift_number'] = $request->filled('shift_number') ? (int) $request->shift_number : null;
         }
 
         // Handle location data
