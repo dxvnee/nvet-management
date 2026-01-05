@@ -37,7 +37,7 @@ class CheckAbsensiStatus extends Command
         // Check if today is a public holiday
         $isPublicHoliday = HariLibur::isHoliday($date);
         $publicHolidayInfo = HariLibur::getHoliday($date);
-        
+
         if ($isPublicHoliday) {
             $this->info("📅 Hari ini adalah hari libur umum: " . ($publicHolidayInfo->nama ?? 'Hari Libur'));
         }
@@ -50,6 +50,12 @@ class CheckAbsensiStatus extends Command
         $lupaPulangCount = 0;
 
         foreach ($pegawai as $user) {
+            // Skip inactive users on this date
+            if ($user->isInactiveOnDate($date)) {
+                $this->info("⏸️  {$user->name} - Inactive (skipped)");
+                continue;
+            }
+
             // Check if this date is user's personal holiday OR public holiday
             $hariLibur = $user->hari_libur ?? [];
             $isPersonalLibur = in_array($hariIni, $hariLibur);

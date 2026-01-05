@@ -161,6 +161,105 @@
                     @enderror
                 </div>
 
+                <!-- Status Inactive -->
+                <div x-data="{
+                    isInactive: {{ old('is_inactive', $user->is_inactive ?? false) ? 'true' : 'false' }},
+                    isPermanent: '{{ old('inactive_permanent', $user->inactive_permanent ?? true) ? '1' : '0' }}'
+                }" class="p-6 bg-gray-50 rounded-xl border border-gray-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Status Pegawai
+                            </label>
+                            <p class="text-xs text-gray-500">Pegawai yang inactive tidak dapat melakukan absen</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="hidden" name="is_inactive" value="0">
+                            <input type="checkbox" name="is_inactive" value="1" x-model="isInactive"
+                                class="sr-only peer"
+                                {{ old('is_inactive', $user->is_inactive ?? false) ? 'checked' : '' }}>
+                            <div class="w-11 h-6 bg-green-500 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
+                            <span class="ml-3 text-sm font-medium" :class="isInactive ? 'text-red-700' : 'text-green-700'" x-text="isInactive ? 'Inactive' : 'Active'"></span>
+                        </label>
+                    </div>
+
+                    <!-- Inactive Options -->
+                    <div x-show="isInactive" x-transition class="space-y-4 mt-4 p-4 bg-white rounded-lg border border-gray-200">
+                        <div class="flex items-center gap-4">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="inactive_permanent" value="1" x-model="isPermanent"
+                                    class="text-red-500 focus:ring-red-500"
+                                    {{ old('inactive_permanent', $user->inactive_permanent ?? true) ? 'checked' : '' }}>
+                                <span class="text-sm font-medium text-gray-700">Inactive Permanen</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="inactive_permanent" value="0" x-model="isPermanent"
+                                    class="text-red-500 focus:ring-red-500"
+                                    {{ old('inactive_permanent', $user->inactive_permanent ?? true) == false ? 'checked' : '' }}>
+                                <span class="text-sm font-medium text-gray-700">Inactive Sementara</span>
+                            </label>
+                        </div>
+
+                        <!-- Temporary Inactive Date Range -->
+                        <div x-show="isPermanent == '0'" x-transition class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                            <div>
+                                <label for="inactive_start_date" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Tanggal Mulai Inactive <span class="text-red-500">*</span>
+                                </label>
+                                <input id="inactive_start_date" name="inactive_start_date" type="date"
+                                    value="{{ old('inactive_start_date', $user->inactive_start_date ? $user->inactive_start_date->format('Y-m-d') : '') }}"
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all @error('inactive_start_date') border-red-500 @enderror"
+                                    :required="isInactive && !isPermanent">
+                                @error('inactive_start_date')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label for="inactive_end_date" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Tanggal Selesai Inactive <span class="text-red-500">*</span>
+                                </label>
+                                <input id="inactive_end_date" name="inactive_end_date" type="date"
+                                    value="{{ old('inactive_end_date', $user->inactive_end_date ? $user->inactive_end_date->format('Y-m-d') : '') }}"
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all @error('inactive_end_date') border-red-500 @enderror"
+                                    :required="isInactive && !isPermanent">
+                                @error('inactive_end_date')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div class="col-span-2">
+                                <label for="inactive_reason" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Alasan Inactive
+                                </label>
+                                <textarea id="inactive_reason" name="inactive_reason" rows="3"
+                                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all @error('inactive_reason') border-red-500 @enderror"
+                                    placeholder="Contoh: Cuti sakit, Cuti menikah, dll.">{{ old('inactive_reason', $user->inactive_reason ?? '') }}</textarea>
+                                @error('inactive_reason')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Permanent Inactive Reason -->
+                        <div x-show="isPermanent == '1'" x-transition class="p-4 bg-red-50 rounded-lg border border-red-200">
+                            <label for="inactive_reason_permanent" class="block text-sm font-medium text-gray-700 mb-2">
+                                Alasan Inactive Permanen
+                            </label>
+                            <textarea id="inactive_reason_permanent" name="inactive_reason" rows="3"
+                                class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all @error('inactive_reason') border-red-500 @enderror"
+                                placeholder="Contoh: Resign, Pensiun, PHK, dll.">{{ old('inactive_reason', $user->inactive_reason ?? '') }}</textarea>
+                            @error('inactive_reason')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                            <p class="text-sm text-gray-700">
+                                <strong>⚠️ Perhatian:</strong> Pegawai yang di-inactive tidak akan dapat melakukan absen dan tidak akan muncul di daftar absen harian setelah tanggal inactive. Riwayat absen sebelumnya tetap tersimpan.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Shift Toggle -->
                 <div x-data="{ isShift: {{ old('is_shift', $user->is_shift) ? 'true' : 'false' }} }">
                     <div class="flex items-center gap-4 mb-4">

@@ -223,13 +223,26 @@
                                     </div>
                                 </td>
                                 <td class="py-3 px-4">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
-                                                {{ $user->jabatan === 'Dokter' ? 'bg-purple-100 text-purple-700' : '' }}
-                                                {{ $user->jabatan === 'Paramedis' ? 'bg-blue-100 text-blue-700' : '' }}
-                                                {{ $user->jabatan === 'Tech' ? 'bg-green-100 text-green-700' : '' }}
-                                                {{ $user->jabatan === 'FO' ? 'bg-orange-100 text-orange-700' : '' }}">
-                                        {{ $user->jabatan ?? '-' }}
-                                    </span>
+                                    <div class="flex flex-row gap-1">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                                    {{ $user->jabatan === 'Dokter' ? 'bg-purple-100 text-purple-700' : '' }}
+                                                    {{ $user->jabatan === 'Paramedis' ? 'bg-blue-100 text-blue-700' : '' }}
+                                                    {{ $user->jabatan === 'Tech' ? 'bg-green-100 text-green-700' : '' }}
+                                                    {{ $user->jabatan === 'FO' ? 'bg-orange-100 text-orange-700' : '' }}">
+                                            {{ $user->jabatan ?? '-' }}
+                                        </span>
+                                        @if($user->is_inactive && $user->isInactiveOnDate())
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 ring-1 ring-red-300">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+                                                </svg>
+                                                Inactive
+                                                @if(!$user->inactive_permanent && $user->inactive_end_date)
+                                                    <span class="text-xs">s/d {{ $user->inactive_end_date->format('d/m') }}</span>
+                                                @endif
+                                            </span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td class="py-3 px-4 text-gray-700">
                                     Rp {{ number_format($user->gaji_pokok ?? 0, 0, ',', '.') }}

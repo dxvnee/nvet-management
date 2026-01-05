@@ -77,6 +77,7 @@ class DashboardController extends Controller
             // Pegawai yang belum absen hari ini
             $sudahAbsen = Absen::whereDate('tanggal', $today)->pluck('user_id')->toArray();
             $belumAbsen = User::where('role', 'pegawai')
+                ->activeOnDate($today) // Filter only active users
                 ->whereIn('id', function ($q) {
                     $q->select('user_id')
                         ->from('absens')

@@ -56,7 +56,49 @@
             </div>
 
             <!-- Status Cards -->
-            @if($liburOrNot)
+            @if(isset($isInactive) && $isInactive)
+                <!-- Status Pegawai Inactive - Full Width -->
+                <div class="w-full p-6 rounded-2xl border-2 bg-gradient-to-br from-red-50 to-rose-50 border-red-300 mb-6 shadow-sm">
+                    <div class="flex items-center gap-4">
+                        <div class="p-4 rounded-2xl bg-gradient-to-br from-red-500 to-rose-600 shadow-lg">
+                            <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-xl font-bold text-red-700">
+                                Status: Inactive
+                            </p>
+                            <p class="text-sm text-red-600 mt-1">
+                                @if($inactiveEndDate)
+                                    Anda sedang inactive hingga {{ $inactiveEndDate->format('d M Y') }}.
+                                @else
+                                    Anda sedang inactive secara permanen.
+                                @endif
+                            </p>
+                            @if($inactiveReason)
+                                <p class="text-sm text-gray-700 mt-2 p-3 bg-white/70 rounded-lg border border-red-200">
+                                    <strong>Alasan:</strong> {{ $inactiveReason }}
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 mb-5 rounded-2xl bg-yellow-50 border border-yellow-200">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-6 h-6 text-yellow-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        <div>
+                            <h3 class="font-semibold text-yellow-800 mb-1">Informasi</h3>
+                            <p class="text-sm text-yellow-700">
+                                Anda tidak dapat melakukan absen saat status Anda inactive. Silakan hubungi admin untuk informasi lebih lanjut.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @elseif($liburOrNot)
                 <!-- Status Hari Libur - Full Width -->
                 <div class="w-full p-6 rounded-2xl border-2 bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 mb-6 shadow-sm">
                     <div class="flex items-center gap-4">
@@ -96,10 +138,10 @@
                 </div>
 
                 <!-- Tombol Lembur Hari Libur -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
                     <!-- Tombol Masuk Lembur -->
                     <button type="button" onclick="openLemburLiburModal('hadir')" {{ $sudahHadir ? 'disabled' : '' }}
-                        class="group w-full py-5 px-6 rounded-2xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-3
+                        class="group w-full py-3 px-6 rounded-2xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-3
                         {{ $sudahHadir ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]' }}">
                         <div class="p-2 bg-white/20 rounded-xl group-hover:scale-110 transition-transform">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +153,7 @@
 
                     <!-- Tombol Pulang Lembur -->
                     <button type="button" onclick="openCameraModal('pulang')" {{ !$sudahHadir || $sudahPulang ? 'disabled' : '' }}
-                        class="group w-full py-5 px-6 rounded-2xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-3
+                        class="group w-full py-3 px-6 rounded-2xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-3
                         {{ !$sudahHadir || $sudahPulang ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]' }}">
                         <div class="p-2 bg-white/20 rounded-xl group-hover:scale-110 transition-transform">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -366,9 +408,9 @@
             <!-- Absen Buttons -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Tombol Hadir -->
-                <button type="button" onclick="openCameraModal('hadir')" {{ $sudahHadir || $sudahIzin || $liburOrNot ? 'disabled' : '' }}
+                <button type="button" onclick="openCameraModal('hadir')" {{ $sudahHadir || $sudahIzin || $liburOrNot || $isInactive ? 'disabled' : '' }}
                     class="group w-full py-3 px-6 rounded-2xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-3
-                    {{ $sudahHadir || $sudahIzin || $liburOrNot ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]' }}">
+                    {{ $sudahHadir || $sudahIzin || $liburOrNot || $isInactive  ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]' }}">
                     <div class="p-2 bg-white/20 rounded-xl group-hover:scale-110 transition-transform">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -378,9 +420,9 @@
                 </button>
 
                 <!-- Tombol Izin -->
-                <button type="button" onclick="openCameraModal('izin')" {{ ($sudahIzin && !$sudahHadir) || $sudahPulang || $liburOrNot ? 'disabled' : '' }}
+                <button type="button" onclick="openCameraModal('izin')" {{ ($sudahIzin && !$sudahHadir) || $sudahPulang || $liburOrNot || $isInactive ? 'disabled' : '' }}
                     class="group w-full py-3 px-6 rounded-2xl font-bold text-white transition-all duration-300 flex items-center justify-center gap-3
-                    {{ ($sudahIzin && !$sudahHadir) || $sudahPulang || $liburOrNot ? 'bg-gray-300 cursor-not-allowed' : ($sudahHadir ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]' : 'bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]') }}">
+                    {{ ($sudahIzin && !$sudahHadir) || $sudahPulang || $liburOrNot || $isInactive ? 'bg-gray-300 cursor-not-allowed' : ($sudahHadir ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]' : 'bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]') }}">
                     <div class="p-2 bg-white/20 rounded-xl group-hover:scale-110 transition-transform">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

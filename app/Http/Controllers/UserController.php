@@ -161,6 +161,11 @@ class UserController extends Controller
             'hari_libur' => ['nullable', 'array'],
             'hari_libur.*' => ['integer', 'min:0', 'max:6'],
             'is_shift' => ['nullable', 'boolean'],
+            'is_inactive' => ['nullable', 'boolean'],
+            'inactive_permanent' => ['nullable', 'boolean'],
+            'inactive_start_date' => ['nullable', 'date'],
+            'inactive_end_date' => ['nullable', 'date', 'after_or_equal:inactive_start_date'],
+            'inactive_reason' => ['nullable', 'string'],
         ];
 
         // Only validate password if provided
@@ -180,6 +185,12 @@ class UserController extends Controller
             $rules['jam_keluar'] = ['required', 'date_format:H:i'];
         }
 
+        // Add validation for inactive dates if inactive and not permanent
+        if ($request->is_inactive && !$request->inactive_permanent) {
+            $rules['inactive_start_date'][] = 'required';
+            $rules['inactive_end_date'][] = 'required';
+        }
+
         $request->validate($rules);
 
         // Get old partner if exists
@@ -193,6 +204,11 @@ class UserController extends Controller
             'jam_kerja' => $request->jam_kerja,
             'hari_libur' => $request->hari_libur ?? [],
             'is_shift' => $request->is_shift ?? false,
+            'is_inactive' => $request->is_inactive ?? false,
+            'inactive_permanent' => $request->inactive_permanent ?? true,
+            'inactive_start_date' => $request->inactive_start_date,
+            'inactive_end_date' => $request->inactive_end_date,
+            'inactive_reason' => $request->inactive_reason,
         ];
 
         if ($request->filled('password')) {

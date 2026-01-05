@@ -34,6 +34,25 @@ class AbsenController extends Controller
         $today = Carbon::today();
         $user = Auth::user();
 
+        // Check if user is inactive today
+        if ($user->isInactiveOnDate($today)) {
+            return view('absen', [
+                'officeLatitude' => $officeLatitude,
+                'officeLongitude' => $officeLongitude,
+                'allowedRadius' => $allowedRadius,
+                'sudahHadir' => null,
+                'sudahIzin' => null,
+                'sudahPulang' => null,
+                'totalJamKerja' => 0,
+                'totalJamKerjaText' => '0 jam 0 menit',
+                'absenHariIni' => null,
+                'liburOrNot' => false,
+                'isInactive' => true,
+                'inactiveReason' => $user->inactive_reason,
+                'inactiveEndDate' => $user->inactive_permanent ? null : $user->inactive_end_date,
+            ]);
+        }
+
         // Ambil absen hari ini (single record per day)
         $absenHariIni = Absen::where('user_id', $user->id)
             ->whereDate('tanggal', $today)
@@ -217,7 +236,7 @@ class AbsenController extends Controller
         // Hitung statistik per hari
         $kalenderData = [];
         $hariLiburUser = $user->hari_libur ?? [];
-        
+
         // Summary statistics
         $totalHadir = 0;
         $totalTelat = 0;
@@ -232,14 +251,14 @@ class AbsenController extends Controller
 
             // Check if this day is a public holiday
             $publicHoliday = $publicHolidays->get($monthDay);
-            
+
             // Check if this is user's personal holiday
             $isPersonalHoliday = in_array($date->isoWeekday(), $hariLiburUser);
 
             $status = null;
             $statusColor = 'gray';
             $statusIcon = '';
-            
+
             if ($absenHari) {
                 if ($absenHari->libur) {
                     $status = 'libur';
@@ -287,8 +306,8 @@ class AbsenController extends Controller
         $sisaMenit = $totalMenitKerja % 60;
 
         return view('riwayat-kalender', compact(
-            'kalenderData', 
-            'bulan', 
+            'kalenderData',
+            'bulan',
             'tahun',
             'totalHadir',
             'totalTelat',
@@ -304,6 +323,11 @@ class AbsenController extends Controller
         $user = Auth::user();
         $today = Carbon::today();
         $now = Carbon::now();
+
+        // Check if user is inactive today
+        if ($user->isInactiveOnDate($today)) {
+            return back()->with('error', 'Anda tidak dapat melakukan absen karena status Anda sedang inactive.');
+        }
 
         // Validate photo is required
         $request->validate([
@@ -348,9 +372,9 @@ class AbsenController extends Controller
 
         // Check for hari khusus kerja biasa (special working day with custom hours)
         $hariKhusus = HariLibur::getHoliday($today);
-        $isHariKhususKerjaBiasa = $hariKhusus && 
-            $hariKhusus->tipe === 'hari_khusus' && 
-            $hariKhusus->is_masuk && 
+        $isHariKhususKerjaBiasa = $hariKhusus &&
+            $hariKhusus->tipe === 'hari_khusus' &&
+            $hariKhusus->is_masuk &&
             !$hariKhusus->is_lembur;
 
         /* ===============================
