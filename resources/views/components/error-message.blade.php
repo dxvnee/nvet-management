@@ -18,7 +18,7 @@
 @endphp
 
 @if($message || session('error') || session('success'))
-    <div class="fixed ml-5 top-5 right-5 z-[1000] animate-fade-in-up">
+    <div id="error-message" class="fixed ml-5 top-5 right-5 z-[1000] animate-fade-in-up overflow-hidden">
         <div class="{{ $bgColor }} {{ $textColor }} px-6 py-4 rounded-lg shadow-lg max-w-sm w-full">
             <div class="flex items-center">
 
@@ -47,5 +47,38 @@
                 </button>
             </div>
         </div>
+        <div class="loading-bar"></div>
+<style>
+.loading-bar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.8);
+    width: 0%;
+    animation: load 5s linear forwards;
+    margin-top: -4px;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+}
+@keyframes load {
+    to { width: 100%; }
+}
+.fade-out {
+    animation: fadeOut 0.5s ease-out forwards;
+}
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+</style>
+<script>
+setTimeout(() => {
+    const el = document.getElementById('error-message');
+    el.classList.add('fade-out');
+    setTimeout(() => {
+        el.style.display = 'none';
+    }, 500);
+}, 5000);
+</script>
     </div>
 @endif
