@@ -493,7 +493,7 @@
     <!-- Camera Modal -->
     <div id="camera-modal"
         class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg transform transition-all animate-slide-up">
+        <div class="bg-white y-translate-1/2 rounded-3xl shadow-2xl w-full max-w-lg transform transition-all animate-slide-up">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-6">
                     <div class="flex items-center gap-3">

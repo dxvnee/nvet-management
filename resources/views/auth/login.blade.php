@@ -56,7 +56,6 @@
                         <label class="flex items-center form-checkbox-label gap-2">
                             <input type="checkbox" class="w-4 h-4 form-checkbox"> Ingat saya
                         </label>
-                        <a class="text-primary hover:opacity-80" href="#">Lupa password?</a>
                     </div>
 
                     <button class="btn btn-primary w-full">

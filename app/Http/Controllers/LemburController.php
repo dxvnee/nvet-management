@@ -17,7 +17,7 @@ class LemburController extends Controller
         $this->photoService = $photoService;
     }
 
-    
+
 
     public function index()
     {

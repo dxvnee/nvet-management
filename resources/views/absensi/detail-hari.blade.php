@@ -30,7 +30,7 @@
                             <tr class="border-b border-gray-200">
                                 <th class="text-center py-3 px-4 font-semibold text-gray-600">
                                     <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'name', 'sort_direction' => (request('sort_by') === 'name' && request('sort_direction') === 'asc') ? 'desc' : 'asc']) }}"
-                                       class="flex items-center space-x-1 hover:text-primary transition-colors">
+                                        class="flex items-center space-x-1 hover:text-primary transition-colors">
                                         <span>Pegawai</span>
                                         @if(request('sort_by') === 'name')
                                             @if(request('sort_direction') === 'asc')
