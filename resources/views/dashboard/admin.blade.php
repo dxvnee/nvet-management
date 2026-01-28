@@ -11,12 +11,7 @@
             {{-- Total Pegawai --}}
             <x-dashboard.stat-card title="Total Pegawai" :value="$totalPegawai" delay="1">
                 <x-slot name="icon">
-                    <svg class="h-5 w-5 lg:h-6 lg:w-6 text-white" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z">
-                        </path>
-                    </svg>
+                    <x-icons.users-group class="h-5 w-5 lg:h-6 lg:w-6 text-white" />
                 </x-slot>
                 <x-slot name="footer">
                     <div class="flex flex-wrap gap-1">
@@ -43,31 +38,19 @@
                 valueColor="bg-gradient-to-r from-emerald-500 to-green-600 bg-clip-text text-transparent"
                 delay="2">
                 <x-slot name="icon">
-                    <svg class="h-5 w-5 lg:h-6 lg:w-6 text-white" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+                    <x-icons.check-circle class="h-5 w-5 lg:h-6 lg:w-6 text-white" />
                 </x-slot>
                 <x-slot name="footer">
                     <div class="flex flex-wrap gap-2">
                         <x-dashboard.badge variant="success">
                             <x-slot name="icon">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                        clip-rule="evenodd" />
-                                </svg>
+                                <x-icons.check-circle-solid class="w-3 h-3" />
                             </x-slot>
                             {{ $tepatWaktuHariIni }}
                         </x-dashboard.badge>
                         <x-dashboard.badge variant="danger">
                             <x-slot name="icon">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                        clip-rule="evenodd" />
-                                </svg>
+                                <x-icons.x-circle-solid class="w-3 h-3" />
                             </x-slot>
                             {{ $telatHariIni }}
                         </x-dashboard.badge>
@@ -79,22 +62,13 @@
             <x-dashboard.stat-card title="Gaji Bulan Ini" :value="'Rp ' . number_format($totalGajiBulanIni, 0, ',', '.')" gradient="from-blue-500 to-indigo-600"
                 hoverBorder="hover:border-blue-200" valueColor="text-gray-800" delay="3" :formatValue="false">
                 <x-slot name="icon">
-                    <svg class="h-5 w-5 lg:h-6 lg:w-6 text-white" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                        </path>
-                    </svg>
+                    <x-icons.currency class="h-5 w-5 lg:h-6 lg:w-6 text-white" />
                 </x-slot>
                 <x-slot name="footer">
                     @if ($penggajianDraft > 0)
                         <x-dashboard.badge variant="warning">
                             <x-slot name="icon">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                        clip-rule="evenodd" />
-                                </svg>
+                                <x-icons.exclamation-circle-solid class="w-3 h-3" />
                             </x-slot>
                             {{ $penggajianDraft }} Draft
                         </x-dashboard.badge>
@@ -106,11 +80,7 @@
             <x-dashboard.stat-card title="Belum Absen" :value="count($belumAbsen)" gradient="from-amber-500 to-orange-500"
                 hoverBorder="hover:border-orange-200" :valueColor="count($belumAbsen) > 0 ? 'text-orange-500' : 'text-green-500'" delay="4" :pulse="count($belumAbsen) > 0">
                 <x-slot name="icon">
-                    <svg class="h-5 w-5 lg:h-6 lg:w-6 text-white" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+                    <x-icons.exclamation-circle class="h-5 w-5 lg:h-6 lg:w-6 text-white" />
                 </x-slot>
                 <x-slot name="footer">
                     @if (count($belumAbsen) > 0)
@@ -135,12 +105,7 @@
             <x-dashboard.stat-card title="Lupa Pulang" :value="$totalLupaPulangBulanIni" gradient="from-rose-500 to-pink-600"
                 hoverBorder="hover:border-rose-200" :valueColor="$totalLupaPulangBulanIni > 3 ? 'text-rose-500' : 'text-gray-800'" delay="4">
                 <x-slot name="icon">
-                    <svg class="h-5 w-5 lg:h-6 lg:w-6 text-white" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-                        </path>
-                    </svg>
+                    <x-icons.arrow-right-on-rectangle class="h-5 w-5 lg:h-6 lg:w-6 text-white" />
                 </x-slot>
                 <x-slot name="footer">
                     @if ($totalLupaPulangBulanIni > 3)
@@ -161,11 +126,7 @@
                 class="lg:col-span-2 bg-white rounded-2xl shadow-lg p-6 border border-gray-100 animate-slide-up-delay-5">
                 <x-dashboard.section-header title="Statistik Absensi" subtitle="7 hari terakhir">
                     <x-slot name="icon">
-                        <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
-                            </path>
-                        </svg>
+                        <x-icons.chart-bar class="h-5 w-5 text-white" />
                     </x-slot>
                     <x-slot name="extra">
                         <div class="flex items-center gap-4">
@@ -215,10 +176,7 @@
                 <x-dashboard.section-header title="Top Keterlambatan" subtitle="Bulan ini"
                     gradient="from-rose-500 to-red-600">
                     <x-slot name="icon">
-                        <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
+                        <x-icons.clock class="h-5 w-5 text-white" />
                     </x-slot>
                 </x-dashboard.section-header>
 
@@ -231,11 +189,7 @@
                 @else
                     <x-dashboard.empty-state title="Luar Biasa! 🎉" subtitle="Tidak ada keterlambatan bulan ini"
                         gradient="from-emerald-100 to-green-100">
-                        <svg class="w-10 h-10 text-emerald-500" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
-                            </path>
-                        </svg>
+                        <x-icons.check class="w-10 h-10 text-emerald-500" />
                     </x-dashboard.empty-state>
                 @endif
             </div>
@@ -245,10 +199,7 @@
         <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 animate-slide-up-delay-5">
             <x-dashboard.section-header title="Aktivitas Terbaru" subtitle="Absensi hari ini" :linkHref="route('absen.detailHari', $today)">
                 <x-slot name="icon">
-                    <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+                    <x-icons.clock class="h-5 w-5 text-white" />
                 </x-slot>
             </x-dashboard.section-header>
 
@@ -259,11 +210,7 @@
                     <div class="col-span-2">
                         <x-dashboard.empty-state title="Belum Ada Aktivitas"
                             subtitle="Belum ada aktivitas absensi hari ini">
-                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
+                            <x-icons.clock class="w-8 h-8 text-gray-400" />
                         </x-dashboard.empty-state>
                     </div>
                 @endforelse
@@ -275,11 +222,7 @@
             <x-dashboard.quick-action href="{{ route('users.index') }}" title="Kelola Pegawai"
                 subtitle="Tambah, edit, hapus">
                 <x-slot name="icon">
-                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
-                        </path>
-                    </svg>
+                    <x-icons.users class="h-6 w-6 text-white" />
                 </x-slot>
             </x-dashboard.quick-action>
 
@@ -287,11 +230,7 @@
                 subtitle="Kelola gaji pegawai" gradient="from-emerald-500 to-green-600"
                 hoverBorder="hover:border-emerald-300" hoverText="group-hover:text-emerald-600">
                 <x-slot name="icon">
-                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
-                        </path>
-                    </svg>
+                    <x-icons.wallet class="h-6 w-6 text-white" />
                 </x-slot>
             </x-dashboard.quick-action>
 
@@ -299,11 +238,7 @@
                 subtitle="Lihat semua absensi" gradient="from-blue-500 to-indigo-600"
                 hoverBorder="hover:border-blue-300" hoverText="group-hover:text-blue-600">
                 <x-slot name="icon">
-                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-                        </path>
-                    </svg>
+                    <x-icons.calendar class="h-6 w-6 text-white" />
                 </x-slot>
             </x-dashboard.quick-action>
 
@@ -311,11 +246,7 @@
                 subtitle="Daftarkan pegawai baru" gradient="from-purple-500 to-violet-600"
                 hoverBorder="hover:border-purple-300" hoverText="group-hover:text-purple-600">
                 <x-slot name="icon">
-                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z">
-                        </path>
-                    </svg>
+                    <x-icons.user-plus class="h-6 w-6 text-white" />
                 </x-slot>
             </x-dashboard.quick-action>
         </div>
