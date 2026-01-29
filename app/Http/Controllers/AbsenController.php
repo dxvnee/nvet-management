@@ -36,7 +36,7 @@ class AbsenController extends Controller
 
         // Check if user is inactive today
         if ($user->isInactiveOnDate($today)) {
-            return view('absen', [
+            return view('absensi.absen', [
                 'officeLatitude' => $officeLatitude,
                 'officeLongitude' => $officeLongitude,
                 'allowedRadius' => $allowedRadius,
@@ -199,7 +199,7 @@ class AbsenController extends Controller
 
         $riwayat = $query->paginate(10)->appends(request()->query());
 
-        return view('riwayat', compact(
+        return view('absensi.riwayat', compact(
             'riwayat',
             'sortBy',
             'sortDirection'
@@ -307,7 +307,7 @@ class AbsenController extends Controller
         $totalJam = floor($totalMenitKerja / 60);
         $sisaMenit = $totalMenitKerja % 60;
 
-        return view('riwayat-kalender', compact(
+        return view('absensi.riwayat-kalender', compact(
             'kalenderData',
             'bulan',
             'tahun',

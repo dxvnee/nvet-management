@@ -196,7 +196,7 @@
         </div>
 
         {{-- Aktivitas Terbaru --}}
-        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 animate-slide-up-delay-5">
+        <x-card-content>
             <x-dashboard.section-header title="Aktivitas Terbaru" subtitle="Absensi hari ini" :linkHref="route('absen.detailHari', $today)">
                 <x-slot name="icon">
                     <x-icons.clock class="h-5 w-5 text-white" />
@@ -215,10 +215,10 @@
                     </div>
                 @endforelse
             </div>
-        </div>
+        </x-card-conte>
 
         {{-- Quick Actions Admin --}}
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 py-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <x-dashboard.quick-action href="{{ route('users.index') }}" title="Kelola Pegawai"
                 subtitle="Tambah, edit, hapus">
                 <x-slot name="icon">
