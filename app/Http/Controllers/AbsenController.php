@@ -137,7 +137,7 @@ class AbsenController extends Controller
         $hariKhususInfo = $isHariKhususKerjaBiasa ? $publicHolidayInfo : null;
         $isInactive = $user->isInactiveOnDate($today);
 
-        return view('absen', compact(
+        return view('absensi.absen', compact(
             'absenHariIni',
             'sudahHadir',
             'sudahIzin',
